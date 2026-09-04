@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#8B4513">
+    <title>Estoque - Mobile</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-first.css?v=20260417-navfit">
+</head>
+<body>
+    <header>
+        <div class="brand-block">
+            <div class="brand-logo-wrap" id="brandLogoWrapEstoqueMobile"></div>
+            <div class="brand-text-wrap">
+                <div class="brand-title" id="nomeEmpresaHeaderEstoqueMobile">Comanda</div>
+                <div class="brand-subtitle">Estoque</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mobile-dashboard-page admin-mobile-page">
+        <main>
+            <section class="card">
+                <h2>Cadastrar Item</h2>
+                <form id="formEstoqueMobile">
+                    <div class="form-group"><label for="nomeItemMobile">Nome do Item</label><input type="text" id="nomeItemMobile" required></div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="categoriaItemMobile">Categoria</label>
+                            <select id="categoriaItemMobile" required>
+                                <option value="">Selecione...</option>
+                                <option value="bebidas">Bebidas</option>
+                                <option value="carnes">Carnes</option>
+                                <option value="pao">Pão</option>
+                                <option value="acompanhamentos">Acompanhamentos</option>
+                                <option value="temperos">Temperos</option>
+                                <option value="embalagens">Embalagens</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="unidadeItemMobile">Unidade</label>
+                            <select id="unidadeItemMobile" required>
+                                <option value="un">Unidade</option>
+                                <option value="kg">Quilograma (kg)</option>
+                                <option value="g">Grama (g)</option>
+                                <option value="l">Litro (L)</option>
+                                <option value="ml">Mililitro (ml)</option>
+                                <option value="pacote">Pacote</option>
+                                <option value="caixa">Caixa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label for="quantidadeItemMobile">Quantidade</label><input type="number" id="quantidadeItemMobile" step="0.01" min="0" required></div>
+                        <div class="form-group"><label for="quantidadeMinimaMobile">Qtd. mínima</label><input type="number" id="quantidadeMinimaMobile" step="0.01" min="0" value="5"></div>
+                    </div>
+                    <div class="form-group"><label for="valorUnitarioMobile">Valor unitário (R$)</label><input type="number" id="valorUnitarioMobile" step="0.01" min="0"></div>
+                    <button type="submit" class="btn btn-primary">Cadastrar Item</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>Estoque Atual</h2>
+                <div class="form-row">
+                    <div class="form-group"><label for="buscarItemMobile">Buscar</label><input type="text" id="buscarItemMobile" placeholder="Buscar item..."></div>
+                    <div class="form-group"><label for="filtroCategoriaMobile">Categoria</label><select id="filtroCategoriaMobile"><option value="">Todas</option><option value="bebidas">Bebidas</option><option value="carnes">Carnes</option><option value="pao">Pão</option><option value="acompanhamentos">Acompanhamentos</option><option value="temperos">Temperos</option><option value="embalagens">Embalagens</option><option value="outros">Outros</option></select></div>
+                </div>
+                <div class="status-chips">
+                    <button type="button" class="status-chip active" id="btnFiltrarEstoqueMobile">Filtrar</button>
+                    <button type="button" class="status-chip" id="btnMostrarAlertasMobile">Alertas</button>
+                </div>
+                <div id="listaEstoqueMobile" class="lista-grid"><p class="empty">Nenhum item em estoque.</p></div>
+            </section>
+
+            <section class="card">
+                <h2>Lista de Compras</h2>
+                <p id="textoResumoComprasMobile" class="hint">Nenhum item em falta.</p>
+                <div id="listaComprasMobile" class="lista-grid"><p class="empty">Nenhum item na lista de compras.</p></div>
+                <div class="form-row" style="margin-top: 10px;">
+                    <button type="button" id="btnAdicionarItemListaManualMobile" class="btn btn-secondary">Adicionar Item Manual</button>
+                    <button type="button" id="btnGerarListaComprasMobile" class="btn btn-primary">Gerar Lista</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260417-mobile-logo"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="mobile-navbar.js?v=20260505-mobile-ajustes"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="estoque-mobile.js"></script>
+</body>
+</html>
+
+
+
+
+

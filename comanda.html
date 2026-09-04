@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Comandas">
+    <meta name="theme-color" content="#c62828">
+    <script src="mobile-routing.js"></script>
+    <title>Comanda Online - Editar Comanda</title>
+    <link rel="manifest" href="manifest.php">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-first.css">
+    <script src="html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Editar Comanda</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <div class="comanda-wrapper" id="comandaCapture">
+                <section class="card comanda-card">
+                    <div class="comanda-header">
+                        <div>
+                            <h2 id="tituloComanda">Comanda #1</h2>
+                            <p id="responsavelComanda" style="margin-top: 5px; color: #666;">Responsável: --</p>
+                        </div>
+                        <div class="comanda-info">
+                            <span id="dataCriacao">Criada: --</span>
+                            <span id="statusComanda" class="status-aberta">ABERTA</span>
+                        </div>
+                    </div>
+
+                    <div class="cliente-info">
+                        <h3>Informações do Cliente</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cpfCliente">CPF (opcional - para fidelidade)</label>
+                                <input type="text" id="cpfCliente" placeholder="000.000.000-00" maxlength="14">
+                                <small id="clienteInfo" style="color: #667eea; display: none;"></small>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nomeCliente">Nome</label>
+                                <input type="text" id="nomeCliente">
+                            </div>
+                            <div class="form-group">
+                                <label for="contatoCliente">Contato</label>
+                                <input type="text" id="contatoCliente">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="observacoes">Observações</label>
+                            <textarea id="observacoes" rows="2"></textarea>
+                        </div>
+                        <div id="fidelidadeInfo" style="display: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            <h4 style="margin: 0 0 10px;">Programa de Fidelidade</h4>
+                            <p id="fidelidadeTexto" style="margin: 0;"></p>
+                        </div>
+                    </div>
+
+                    <div class="itens-section">
+                        <h3>Itens da Comanda</h3>
+                        
+                        <div class="adicionar-item">
+                            <h4>Adicionar Item</h4>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="categoriaItem">Categoria</label>
+                                    <select id="categoriaItem">
+                                        <option value="todos">Todos os produtos</option>
+                                        <option value="bebidas">Bebidas</option>
+                                        <option value="espetos">Espetos</option>
+                                        <option value="hamburgers">Hamburgers</option>
+                                        <option value="outros">Outros</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="buscaProdutoItem">Buscar produto</label>
+                                    <div class="product-picker">
+                                        <input type="text" id="buscaProdutoItem" placeholder="Toque para listar produtos ou digite para filtrar" autocomplete="off">
+                                        <input type="hidden" id="produtoItem" value="">
+                                        <div id="produtoSugestoes" class="product-suggestions" hidden></div>
+                                    </div>
+                                    <p class="hint" id="produtoBuscaHint">A lista respeita a categoria selecionada e filtra enquanto você digita.</p>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="quantidadeItem">Quantidade</label>
+                                    <input type="number" id="quantidadeItem" min="1" value="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="valorItem">Valor Unitário (R$)</label>
+                                    <input type="number" id="valorItem" step="0.01" min="0">
+                                </div>
+                            </div>
+                            <button type="button" id="btnAdicionarItem" class="btn btn-secondary">Adicionar Item</button>
+                        </div>
+
+                        <table class="tabela-itens">
+                            <thead>
+                                <tr>
+                                    <th>Item</th>
+                                    <th>Qtd</th>
+                                    <th>Valor Unit.</th>
+                                    <th>Total</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaItens">
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3"><strong>Total Geral</strong></td>
+                                    <td colspan="2"><strong id="totalGeral">R$ 0,00</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <div class="historico-cancelamentos" id="historicoCancelamentosSection" style="display: none;">
+                            <h4>Historico de Itens Cancelados</h4>
+                            <div id="historicoCancelamentosLista"></div>
+                        </div>
+                    </div>
+
+                    <div class="comanda-footer" id="comandaFooter" style="display: none;">
+                        <p id="horaFechamento">Fechamento: --</p>
+                        <p id="duracaoComanda">Duração: --</p>
+                    </div>
+
+                    <div class="forma-pagamento" id="formaPagamentoSection" style="margin-top: 20px;">
+                        <h3>Forma de Pagamento</h3>
+                        <div class="form-group">
+                            <label for="formaPagamento">Selecione o método de pagamento:</label>
+                            <select id="formaPagamento">
+                                <option value="">Não definido</option>
+                                <option value="dinheiro">&#x1F4B5; Dinheiro</option>
+                                <option value="credito">&#x1F4B3; Cartão de Crédito</option>
+                                <option value="debito">&#x1F4B3; Cartão de Débito</option>
+                                <option value="pix">&#x1F4F1; PIX</option>
+                            </select>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div class="acoes">
+                <button type="button" id="btnSalvar" class="btn btn-primary">Salvar Comanda</button>
+                <button type="button" id="btnImprimir" class="btn btn-info">&#x1F5A8;&#xFE0F; Imprimir</button>
+                <button type="button" id="btnImprimirCozinha" class="btn btn-secondary">Imprimir Cozinha</button>
+                <button type="button" id="btnFechar" class="btn btn-warning">Fechar Comanda</button>
+                <button type="button" id="btnVoltar" class="btn btn-light">Voltar</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="mobile-navbar.js?v=20260505-mobile-ajustes"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="comanda.js?v=20260423-produto-autocomplete-polish"></script>
+</body>
+</html>
+
+
+
+
+
+
+

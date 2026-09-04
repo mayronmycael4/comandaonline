@@ -1,0 +1,308 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comanda Online - Relatórios</title>
+    <link rel="stylesheet" href="style.css?v=20260417-desktop">
+    <style>
+        .relatorio-card {
+            background: linear-gradient(135deg, var(--c-red-dark), var(--c-red), var(--c-orange), var(--c-yellow));
+            color: #fff8ea;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .relatorio-card h3 {
+            margin: 0 0 15px;
+            font-size: 1.3rem;
+        }
+        .relatorio-valor {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .relatorio-detalhes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .detalhe-item {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.24);
+        }
+        .detalhe-item .valor {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .detalhe-item .label {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+        .categoria-list {
+            margin-top: 15px;
+        }
+        .categoria-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.92rem;
+            color: #fff8ea;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, var(--surface), var(--surface-2));
+            color: var(--text-soft);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--c-yellow), #f5a400);
+            color: #2a1605;
+            border-color: #e8ab00;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .funcionario-vendas {
+            background: linear-gradient(180deg, var(--surface), var(--surface-2));
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        .funcionario-vendas h4 {
+            margin: 0 0 10px;
+            color: var(--text);
+        }
+        .barra-progresso {
+            background: rgba(255, 193, 7, 0.2);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .barra-progresso-fill {
+            background: linear-gradient(90deg, #ffbe1a, #ff8f00);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .relatorio-func-meta,
+        .relatorio-func-share {
+            color: var(--text-soft);
+            margin: 0;
+            line-height: 1.35;
+        }
+
+        .relatorio-func-meta {
+            font-size: 0.92rem;
+            margin-bottom: 10px;
+        }
+
+        .relatorio-func-total {
+            margin-bottom: 10px;
+            color: var(--text);
+            font-size: 1.08rem;
+        }
+
+        .relatorio-func-share {
+            font-size: 0.86rem;
+            margin-top: 6px;
+        }
+
+        :root[data-theme='light'] .relatorio-card {
+            color: #2a1605;
+        }
+
+        :root[data-theme='light'] .categoria-item,
+        :root[data-theme='light'] .detalhe-item .label {
+            color: #2a1605;
+        }
+
+        :root[data-theme='light'] .detalhe-item {
+            background: rgba(255,255,255,0.68);
+            border-color: rgba(59, 35, 20, 0.18);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Relatórios Financeiros</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <div class="tabs">
+                <button class="tab-btn active" type="button" data-tab="dia">Hoje</button>
+                <button class="tab-btn" type="button" data-tab="semana">Esta Semana</button>
+                <button class="tab-btn" type="button" data-tab="mes">Este Mês</button>
+                <button class="tab-btn" type="button" data-tab="ano">Este Ano</button>
+                <button class="tab-btn" type="button" data-tab="personalizado">Personalizado</button>
+                <button class="btn btn-secondary" type="button" id="btnExportarRelatorio">Exportar CSV</button>
+            </div>
+
+            <div id="tab-dia" class="tab-content active">
+                <div class="relatorio-card">
+                    <h3>Vendas de Hoje</h3>
+                    <div class="relatorio-valor" id="valorDia">R$ 0,00</div>
+                    <div class="relatorio-detalhes">
+                        <div class="detalhe-item">
+                            <div class="valor" id="comandasDia">0</div>
+                            <div class="label">Comandas</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="valor" id="itensDia">0</div>
+                            <div class="label">Itens Vendidos</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="valor" id="ticketDia">R$ 0,00</div>
+                            <div class="label">Ticket Médio</div>
+                        </div>
+                    </div>
+                    <div class="categoria-list" id="categoriasDia"></div>
+                </div>
+                <div class="card">
+                    <h3>Vendas por Funcionário - Hoje</h3>
+                    <div id="funcionariosDia"></div>
+                </div>
+            </div>
+
+            <div id="tab-semana" class="tab-content">
+                <div class="relatorio-card">
+                    <h3>Vendas da Semana</h3>
+                    <div class="relatorio-valor" id="valorSemana">R$ 0,00</div>
+                    <div class="relatorio-detalhes">
+                        <div class="detalhe-item">
+                            <div class="valor" id="comandasSemana">0</div>
+                            <div class="label">Comandas</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="valor" id="itensSemana">0</div>
+                            <div class="label">Itens Vendidos</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="valor" id="ticketSemana">R$ 0,00</div>
+                            <div class="label">Ticket Médio</div>
+                        </div>
+                    </div>
+                    <div class="categoria-list" id="categoriasSemana"></div>
+                </div>
+                <div class="card">
+                    <h3>Vendas por Funcionário - Semana</h3>
+                    <div id="funcionariosSemana"></div>
+                </div>
+            </div>
+
+            <div id="tab-mes" class="tab-content">
+                <div class="relatorio-card">
+                    <h3>Vendas deste Mês</h3>
+                    <div class="relatorio-valor">R$ 0,00</div>
+                    <div class="relatorio-detalhes">
+                        <div class="detalhe-item">
+                            <div class="valor">0</div>
+                            <div class="label">Comandas</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="valor">0</div>
+                            <div class="label">Itens Vendidos</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="valor">R$ 0,00</div>
+                            <div class="label">Ticket Médio</div>
+                        </div>
+                    </div>
+                    <div class="categoria-list"></div>
+                </div>
+                <div class="card">
+                    <h3>Vendas por Funcionário - Mês</h3>
+                    <div id="funcionariosMes"></div>
+                </div>
+            </div>
+
+            <div id="tab-ano" class="tab-content">
+                <div class="relatorio-card">
+                    <h3>Vendas deste Ano</h3>
+                    <div class="relatorio-valor">R$ 0,00</div>
+                    <div class="relatorio-detalhes">
+                        <div class="detalhe-item">
+                            <div class="valor">0</div>
+                            <div class="label">Comandas</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="valor">0</div>
+                            <div class="label">Itens Vendidos</div>
+                        </div>
+                        <div class="detalhe-item">
+                            <div class="valor">R$ 0,00</div>
+                            <div class="label">Ticket Médio</div>
+                        </div>
+                    </div>
+                    <div class="categoria-list"></div>
+                </div>
+                <div class="card">
+                    <h3>Vendas por Funcionário - Ano</h3>
+                    <div id="funcionariosAno"></div>
+                </div>
+            </div>
+
+            <div id="tab-personalizado" class="tab-content">
+                <div class="card">
+                    <h3>Filtro Personalizado</h3>
+                    <div class="form-row" style="margin-bottom: 12px;">
+                        <div class="form-group">
+                            <label for="dataInicioPersonalizado">Data inicial</label>
+                            <input type="date" id="dataInicioPersonalizado">
+                        </div>
+                        <div class="form-group">
+                            <label for="dataFimPersonalizado">Data final</label>
+                            <input type="date" id="dataFimPersonalizado">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="button" id="btnAplicarFiltroPersonalizado">Aplicar filtro</button>
+                </div>
+                <div class="relatorio-card" id="cardPersonalizado" style="display:none; margin-top: 15px;">
+                    <h3>Vendas no Período</h3>
+                    <div class="relatorio-valor">R$ 0,00</div>
+                    <div class="relatorio-detalhes"></div>
+                    <div class="categoria-list"></div>
+                </div>
+                <div class="card" id="funcCardPersonalizado" style="display:none;">
+                    <h3>Vendas por Funcionário - Período</h3>
+                    <div id="funcionariosPersonalizado"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="relatorios.js"></script>
+</body>
+</html>
+
+
+
+
+
+

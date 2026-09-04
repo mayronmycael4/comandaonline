@@ -1,0 +1,11 @@
+<?php
+// Copie este arquivo para db_runtime_config.php no servidor hospedado
+// e ajuste os valores com os dados EXATOS do painel de banco.
+
+return [
+    'host' => 'sqlXXX.infinityfree.com',
+    'port' => 3306,
+    'dbname' => 'if0_xxxxxxxx_comanda_online',
+    'user' => 'if0_xxxxxxxx',
+    'pass' => 'SUA_SENHA_DO_BANCO'
+];

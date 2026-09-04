@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comanda Online - Ajuda &amp; Feedback</title>
+    <link rel="stylesheet" href="style.css?v=20260417-ajuda">
+    <style>
+        .ajuda-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 700px) { .ajuda-layout { grid-template-columns: 1fr; } }
+        .feedback-tipo-grid {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .tipo-btn {
+            padding: 8px 18px;
+            border-radius: 999px;
+            border: 2px solid var(--border, #ddd);
+            background: transparent;
+            color: var(--text, #333);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.18s;
+        }
+        .tipo-btn.active, .tipo-btn:hover {
+            border-color: var(--primary, #8B4513);
+            background: var(--primary, #8B4513);
+            color: #fff;
+        }
+        .feedback-lista { display: flex; flex-direction: column; gap: 12px; }
+        .feedback-item {
+            background: var(--surface-2, #f7f7f7);
+            border: 1px solid var(--border, #e0e0e0);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .feedback-item .fi-tipo {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 2px 10px;
+            border-radius: 999px;
+            margin-bottom: 6px;
+            display: inline-block;
+        }
+        .fi-tipo.sugestao { background: rgba(39,174,96,0.15); color: #27ae60; }
+        .fi-tipo.erro     { background: rgba(231,76,60,0.15);  color: #e74c3c; }
+        .fi-tipo.melhoria { background: rgba(52,152,219,0.15); color: #3498db; }
+        .fi-tipo.outro    { background: rgba(127,140,141,0.15); color: #7f8c8d; }
+        .feedback-item .fi-msg { color: var(--text, #333); font-size: 0.95rem; margin: 4px 0; }
+        .feedback-item .fi-meta { font-size: 0.78rem; color: var(--text-muted, #aaa); }
+        .feedback-empty { text-align: center; padding: 30px; color: var(--text-muted, #aaa); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>â“ Ajuda &amp; Feedback</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <div class="ajuda-layout">
+                <section class="card">
+                    <h2>Enviar Feedback</h2>
+                    <p style="color:var(--text-muted,#888); margin-bottom:16px;">
+                        Encontrou um problema ou tem uma sugestão? Nos conte!
+                    </p>
+                    <form id="formFeedback">
+                        <div class="form-group">
+                            <label>Tipo</label>
+                            <div class="feedback-tipo-grid" id="tipoGrid">
+                                <button type="button" class="tipo-btn active" data-tipo="sugestao">💡 Sugestão</button>
+                                <button type="button" class="tipo-btn" data-tipo="erro">🐛 Erro / Bug</button>
+                                <button type="button" class="tipo-btn" data-tipo="melhoria">🚀 Melhoria</button>
+                                <button type="button" class="tipo-btn" data-tipo="outro">📝 Outro</button>
+                            </div>
+                            <input type="hidden" id="feedbackTipo" value="sugestao">
+                        </div>
+                        <div class="form-group">
+                            <label for="feedbackMensagem">Mensagem</label>
+                            <textarea id="feedbackMensagem" rows="5" required
+                                      placeholder="Descreva sua sugestão, problema ou comentário..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%;">📤 Enviar Feedback</button>
+                    </form>
+                </section>
+
+                <section class="card">
+                    <h2>Feedbacks Enviados</h2>
+                    <div id="feedbackLista">
+                        <p class="feedback-empty">Carregando...</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260417-ajuda"></script>
+    <script src="menu-admin.js?v=20260417-ajuda"></script>
+    <script src="ajuda-init.js?v=20260417-ajuda"></script>
+</body>
+</html>

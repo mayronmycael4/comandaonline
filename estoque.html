@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comanda Online - Controle de Estoque</title>
+    <link rel="stylesheet" href="style.css?v=20260417-desktop">
+    <style>
+        .estoque-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .estoque-item {
+            background: linear-gradient(180deg, var(--surface), var(--surface-2));
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+            color: var(--text);
+        }
+        .estoque-item.baixo {
+            border-color: #e53e3e;
+            background: linear-gradient(180deg, rgba(229, 62, 62, 0.14), var(--surface-2));
+        }
+        .estoque-item.medio {
+            border-color: #ed8936;
+            background: linear-gradient(180deg, rgba(237, 137, 54, 0.16), var(--surface-2));
+        }
+        .estoque-item .nome {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+        .estoque-item .quantidade {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--c-yellow);
+        }
+        .estoque-item .quantidade.baixo {
+            color: #e53e3e;
+        }
+        .estoque-item .unidade {
+            color: var(--text-soft);
+            font-size: 0.9rem;
+        }
+        .estoque-item .acoes {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+        }
+        .filtro-estoque {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .filtro-estoque input, .filtro-estoque select {
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Controle de Estoque</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Cadastrar Item no Estoque</h2>
+                <form id="formEstoque">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nomeItem">Nome do Item</label>
+                            <input type="text" id="nomeItem" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="categoriaItem">Categoria</label>
+                            <select id="categoriaItem" required>
+                                <option value="">Selecione...</option>
+                                <option value="bebidas">Bebidas</option>
+                                <option value="carnes">Carnes</option>
+                                <option value="pao">Pão</option>
+                                <option value="acompanhamentos">Acompanhamentos</option>
+                                <option value="temperos">Temperos</option>
+                                <option value="embalagens">Embalagens</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quantidadeItem">Quantidade</label>
+                            <input type="number" id="quantidadeItem" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="unidadeItem">Unidade</label>
+                            <select id="unidadeItem" required>
+                                <option value="un">Unidade</option>
+                                <option value="kg">Quilograma (kg)</option>
+                                <option value="g">Grama (g)</option>
+                                <option value="l">Litro (L)</option>
+                                <option value="ml">Mililitro (ml)</option>
+                                <option value="pacote">Pacote</option>
+                                <option value="caixa">Caixa</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quantidadeMinima">Quantidade Mínima (alerta)</label>
+                            <input type="number" id="quantidadeMinima" step="0.01" min="0" value="5">
+                        </div>
+                        <div class="form-group">
+                            <label for="valorUnitario">Valor Unitário (R$)</label>
+                            <input type="number" id="valorUnitario" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cadastrar Item</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>Estoque Atual</h2>
+                <div class="filtro-estoque">
+                    <input type="text" id="buscarItem" placeholder="Buscar item...">
+                    <select id="filtroCategoria">
+                        <option value="">Todas as Categorias</option>
+                        <option value="bebidas">Bebidas</option>
+                        <option value="carnes">Carnes</option>
+                        <option value="pao">Pão</option>
+                        <option value="acompanhamentos">Acompanhamentos</option>
+                        <option value="temperos">Temperos</option>
+                        <option value="embalagens">Embalagens</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                    <button onclick="filtrarEstoque()" class="btn btn-secondary">Filtrar</button>
+                    <button onclick="mostrarAlertas()" class="btn btn-warning">Itens em Alerta</button>
+                </div>
+                <div id="listaEstoque" class="estoque-grid">
+                    <p class="empty">Nenhum item cadastrado no estoque.</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Lista de Compras - Itens em Falta</h2>
+                <div id="listaComprasContainer">
+                    <div class="lista-compras-resumo" id="resumoListaCompras" style="margin-bottom: 20px; display: none;">
+                        <div style="background: linear-gradient(135deg, #FF3B30 0%, #FF6B6B 100%); color: white; padding: 15px; border-radius: 8px;">
+                            <h4 style="margin: 0 0 10px;">⚠️ Atenção</h4>
+                            <p id="textoResumoCompras" style="margin: 0;"></p>
+                        </div>
+                    </div>
+                    <div id="listaCompras" class="lista-compras">
+                        <p class="empty">Nenhum item na lista de compras.</p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button onclick="adicionarItemListaManual()" class="btn btn-secondary">+ Adicionar Item Manual</button>
+                    <button onclick="gerarListaPDF()" class="btn btn-primary">🖨️ Gerar Lista para Imprimir</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="estoque-init.js"></script>
+</body>
+</html>
+
+
+
+
+
+

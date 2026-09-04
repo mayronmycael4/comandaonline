@@ -1,0 +1,26 @@
+{
+  "name": "Sistema de Comandas - Espetaria Oliveira",
+  "short_name": "Espetaria",
+  "description": "Sistema de comandas para atendimento mobile da Espetaria Oliveira.",
+  "start_url": "./index-mobile.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f5f5f5",
+  "theme_color": "#8B4513",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

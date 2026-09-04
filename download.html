@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comanda Online - Download</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Backup e Restauração</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Backup e Restauração</h2>
+                
+                <div class="download-section">
+                    <h3>Baixar Dados</h3>
+                    <button id="btnDownloadTodos" class="btn btn-primary">Baixar Backup Completo</button>
+                    <p class="hint">Exporta banco completo em JSON (clientes, funcionários, produtos, estoque, comandas, itens, logs e demais tabelas).</p>
+                    <p id="resumoBackupGerado" class="hint"></p>
+                </div>
+
+                <div class="download-section">
+                    <h3>Importar Dados</h3>
+                    <input type="file" id="inputImportar" accept=".json" style="display: none;">
+                    <button id="btnImportar" class="btn btn-secondary">Selecionar Backup JSON</button>
+                    <p id="nomeArquivo" class="hint"></p>
+                    <button id="btnConfirmarImportar" class="btn btn-primary" style="display: none; margin-top: 10px;">Confirmar Restauração</button>
+                </div>
+
+
+                <div class="download-section danger-zone">
+                    <h3>Zona de Perigo</h3>
+                    <button id="btnExcluirTodos" class="btn btn-danger">Excluir Todos os Dados</button>
+                    <p class="hint danger">Esta ação não pode ser desfeita!</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="download.js"></script>
+</body>
+</html>
+
+
+
+
+
+

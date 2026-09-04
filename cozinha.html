@@ -1,0 +1,381 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozinha - Pedidos Pendentes</title>
+    <link rel="stylesheet" href="style.css?v=20260417-cozinha-dark">
+    <style>
+        /* ===== COZINHA DESKTOP — dark theme ===== */
+        .cozinha-desktop-page {
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .cozinha-desktop-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, var(--surface, #1D1A18), var(--surface-2, #241C17));
+            border-radius: 14px;
+            padding: 18px 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 193, 7, 0.22);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+        }
+
+        .cozinha-desktop-header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cozinha-status-bar {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cozinha-contador {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #FFC107;
+            background: rgba(255, 193, 7, 0.15);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            padding: 6px 16px;
+            border-radius: 999px;
+        }
+
+        .cozinha-ultima-atualizacao {
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .cozinha-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-cozinha-icon {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #fff;
+        }
+
+        .btn-cozinha-icon:hover {
+            background: rgba(255, 193, 7, 0.18);
+            border-color: rgba(255, 193, 7, 0.45);
+        }
+
+        .btn-cozinha-icon.muted { opacity: 0.35; }
+
+        .cozinha-toolbar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .cozinha-lista-desktop {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .cozinha-card {
+            background: linear-gradient(160deg, var(--surface, #1D1A18), var(--surface-2, #241C17));
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid rgba(255, 193, 7, 0.18);
+            border-left: 6px solid var(--cozinha-prioridade-cor, rgba(255, 193, 7, 0.4));
+            position: relative;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+        }
+
+        .cozinha-card.prioridade-nova  { --cozinha-prioridade-cor: #27ae60; }
+        .cozinha-card.prioridade-media { --cozinha-prioridade-cor: #f1c40f; }
+        .cozinha-card.prioridade-alta  { --cozinha-prioridade-cor: #e74c3c; }
+        .cozinha-card.pedido-cancelado {
+            --cozinha-prioridade-cor: #e53935;
+            border-color: rgba(229, 57, 53, 0.5);
+            background: linear-gradient(160deg, #2a1111, #241111);
+            box-shadow: 0 8px 22px rgba(229, 57, 53, 0.22);
+        }
+
+        /* Cancelado — destaque visual forte */
+        .cozinha-card-cancelada {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: rgba(229, 57, 53, 0.2);
+            border: 1px solid rgba(229, 57, 53, 0.65);
+            color: #ff8a80;
+            font-weight: 700;
+            font-size: 0.9rem;
+            animation: alertePulse 1.8s ease infinite;
+        }
+
+        @keyframes alertePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(229, 57, 53, 0); }
+            50%       { box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.28); }
+        }
+
+        .cozinha-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .cozinha-mesa {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .cozinha-mesa small {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.55);
+            margin-top: 2px;
+        }
+
+        .cozinha-timer-badge {
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+            white-space: nowrap;
+        }
+
+        .prioridade-nova  .cozinha-timer-badge { background: rgba(39, 174, 96, 0.2);  color: #2ecc71; }
+        .prioridade-media .cozinha-timer-badge { background: rgba(241, 196, 15, 0.2); color: #f1c40f; }
+        .prioridade-alta  .cozinha-timer-badge { background: rgba(231, 76, 60, 0.2);  color: #e74c3c; }
+
+        .cozinha-itens-lista {
+            list-style: none;
+            margin: 0 0 14px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .cozinha-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 8px 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .cozinha-item-qty {
+            font-size: 1rem;
+            font-weight: 900;
+            color: #FFC107;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        .cozinha-item-info { flex: 1; }
+
+        .cozinha-item-nome {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .cozinha-item-obs {
+            font-size: 0.78rem;
+            color: #ffc107;
+            margin-top: 2px;
+        }
+
+        .cozinha-item-status {
+            font-size: 0.78rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            align-self: center;
+            white-space: nowrap;
+        }
+
+        .item-pendente  { background: rgba(231, 76, 60, 0.25); color: #e74c3c; }
+        .item-pronto    { background: rgba(39, 174, 96, 0.25);  color: #2ecc71; }
+        .item-cancelado { background: rgba(229, 57, 53, 0.24); color: #ff8a80; border: 1px solid rgba(229, 57, 53, 0.6); }
+
+        .cozinha-card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-pronto-item {
+            background: linear-gradient(135deg, #27ae60, #1a7a44);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            align-self: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-pronto-item:hover     { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .btn-pronto-item:disabled  { opacity: 0.45; cursor: not-allowed; }
+
+        .btn-pronto-comanda {
+            flex: 1;
+            background: linear-gradient(135deg, #1a6a3a, #0f3d22);
+            color: #a8f0c0;
+            border: 1px solid rgba(39, 174, 96, 0.4);
+            border-radius: 10px;
+            padding: 11px 14px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-pronto-comanda:hover {
+            background: linear-gradient(135deg, #27ae60, #1a7a44);
+            color: #fff;
+        }
+
+        .cozinha-card-done {
+            color: #2ecc71;
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .cozinha-garcom-alerta {
+            margin-top: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(255, 193, 7, 0.15);
+            color: #FFC107;
+            border: 1px solid rgba(255, 193, 7, 0.35);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .cozinha-empty {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .cozinha-empty span { font-size: 3rem; display: block; margin-bottom: 12px; }
+        .cozinha-empty p { font-size: 1.1rem; }
+
+        .cozinha-separador-categoria {
+            grid-column: 1/-1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #FFC107;
+            font-size: 0.9rem;
+            font-weight: 700;
+            padding: 4px 0 2px;
+            opacity: 0.8;
+        }
+
+        .cozinha-separador-categoria::before,
+        .cozinha-separador-categoria::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 193, 7, 0.22);
+        }
+
+        @keyframes cozinhaFlash {
+            0%,100% { border-color: var(--cozinha-prioridade-cor); }
+            50%      { border-color: #FFC107; box-shadow: 0 0 22px rgba(255, 193, 7, 0.35); }
+        }
+
+        .cozinha-card.novo { animation: cozinhaFlash 0.7s ease 3; }
+    </style>
+</head>
+<body>
+    <script src="mobile-routing.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="branding.js?v=20260417-mobile-logo"></script>
+
+    <header>
+        <nav class="desktop-menu"></nav>
+    </header>
+
+    <div class="cozinha-desktop-page">
+
+        <div class="cozinha-desktop-header">
+            <h1>&#x1F373; Cozinha &mdash; Pedidos Pendentes</h1>
+            <div class="cozinha-status-bar">
+                <span id="cozinhaContadorDesktop" class="cozinha-contador">0 aguardando</span>
+                <span id="cozinhaUltimaDesktop" class="cozinha-ultima-atualizacao">&mdash;</span>
+                <div class="cozinha-header-actions">
+                    <button id="btnLimparCozinha" type="button" class="btn-cozinha-icon" title="Limpar painel da cozinha" aria-label="Limpar cozinha" style="font-size:1rem;">🧹 Limpar</button>
+                    <button id="btnSomDesktop" type="button" class="btn-cozinha-icon" title="Som" aria-label="Ativar/desativar som">&#x1F514;</button>
+                    <button id="btnFullscreenDesktop" type="button" class="btn-cozinha-icon" title="Tela cheia" aria-label="Alternar tela cheia">&#x26F6;</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="cozinha-toolbar">
+            <div class="status-chips">
+                <button type="button" class="status-chip active" data-cozinha-view="pendente">Pendentes</button>
+                <button type="button" class="status-chip" data-cozinha-view="todos">Todos</button>
+            </div>
+            <div class="status-chips">
+                <button type="button" class="status-chip active" data-cozinha-group="comanda">Por Mesa</button>
+                <button type="button" class="status-chip" data-cozinha-group="categoria">Por Tipo</button>
+            </div>
+                <div class="status-chips">
+                    <button type="button" class="status-chip active" data-kds-setor="cozinha">Cozinha</button>
+                    <button type="button" class="status-chip" data-kds-setor="churrasqueira">Churrasqueira</button>
+                    <button type="button" class="status-chip" data-kds-setor="bar">Bar</button>
+                </div>
+                <button type="button" id="btnProntoLoteDesktop" class="btn btn-secondary">Marcar pendentes visiveis como prontos</button>
+        </div>
+
+        <div id="cozinhaListaDesktop" class="cozinha-lista-desktop">
+            <div class="cozinha-empty"><span>&#x1F37D;&#xFE0F;</span><p>Nenhum pedido pendente.</p></div>
+        </div>
+
+    </div>
+
+    <script src="cozinha-shared.js?v=20260518-sql-timebase"></script>
+    <script src="cozinha.js?v=20260518-timefix-force"></script>
+</body>
+</html>

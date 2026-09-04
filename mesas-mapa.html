@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Mesas</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .mapa-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; }
+        .mesa-card { border-radius:12px; padding:14px; border:1px solid rgba(255,255,255,.14); background:linear-gradient(180deg,var(--surface),var(--surface-2)); cursor:pointer; }
+        .mesa-card h3 { margin:0 0 4px; font-size:1.15rem; }
+        .mesa-card p { margin:0; font-size:.82rem; opacity:.85; }
+        .mesa-livre { border-left:6px solid #2ecc71; }
+        .mesa-ocupada { border-left:6px solid #f39c12; }
+        .mesa-preparo { border-left:6px solid #e67e22; }
+        .mesa-pronta { border-left:6px solid #3498db; }
+        .mesa-fechando { border-left:6px solid #9b59b6; }
+    </style>
+</head>
+<body>
+<div class="container">
+<header>
+    <h1>Mapa Visual de Mesas</h1>
+    <nav class="desktop-menu"></nav>
+</header>
+<main>
+    <section class="card">
+        <h2>Status de Operacao</h2>
+        <div id="mapaMesasGrid" class="mapa-grid"></div>
+    </section>
+</main>
+</div>
+<script src="api.js"></script>
+<script src="storage.js?v=20260828a"></script>
+<script src="toast.js"></script>
+<script src="menu-geral.js?v=20260828a"></script>
+<script src="menu-admin.js"></script>
+<script src="mesas-mapa.js"></script>
+</body>
+</html>

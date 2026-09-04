@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#8B4513">
+    <script src="mobile-routing.js"></script>
+    <title>Comanda Online - Perfil e Preferências</title>
+    <link rel="stylesheet" href="style.css?v=20260519-ui-ajustes">
+    <link rel="stylesheet" href="mobile-first.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Perfil e Preferências</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Minha Conta</h2>
+                <div class="perfil-row"><span>Nome</span><strong id="perfilNomeDesktop">-</strong></div>
+                <div class="perfil-row"><span>Login</span><strong id="perfilLoginDesktop">-</strong></div>
+                <div class="perfil-row"><span>Função</span><strong id="perfilFuncaoDesktop">-</strong></div>
+            </section>
+
+            <section class="card">
+                <h2>Preferências</h2>
+                <div class="form-group" style="max-width: 320px;">
+                    <label for="seletorTemaDesktop">Tema</label>
+                    <select id="seletorTemaDesktop">
+                        <option value="system">Tema do sistema</option>
+                        <option value="light">Claro</option>
+                        <option value="dark">Escuro</option>
+                    </select>
+                </div>
+                <p class="hint">A alteração é aplicada imediatamente e vale para desktop e mobile.</p>
+
+                <hr style="margin: 16px 0; border: 0; border-top: 1px solid rgba(0,0,0,0.08);">
+
+                <h3 style="margin-top: 0;">Som da Cozinha</h3>
+                <div class="form-group" style="max-width: 520px;">
+                    <label style="display:flex; align-items:center; gap:8px; margin-bottom: 8px;">
+                        <input type="checkbox" id="perfilSomAtivoDesktop" checked>
+                        Ativar som de novo pedido
+                    </label>
+                    <label for="perfilAudioDesktop">Áudio personalizado (mp3/wav/ogg)</label>
+                    <input type="file" id="perfilAudioDesktop" accept="audio/*">
+                    <p id="perfilAudioAtualDesktop" class="hint">Usando som padrão do sistema.</p>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top: 10px;">
+                        <button id="btnSalvarSomPerfilDesktop" type="button" class="btn btn-primary">Salvar Preferências de Som</button>
+                        <button id="btnTestarSomPerfilDesktop" type="button" class="btn btn-secondary">Testar Som</button>
+                        <button id="btnRemoverSomPerfilDesktop" type="button" class="btn btn-danger">Remover Áudio Personalizado</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card" id="secaoPreferenciasExpansiveis">
+                <h2>Preferências Avançadas</h2>
+                <div class="perfil-preferencias-grid">
+                    <div class="perfil-pref-item">
+                        <strong>Sons</strong>
+                        <span>Estrutura preparada para notificações sonoras por usuário.</span>
+                    </div>
+                    <div class="perfil-pref-item">
+                        <strong>Idioma</strong>
+                        <span>Estrutura preparada para localização futura.</span>
+                    </div>
+                    <div class="perfil-pref-item">
+                        <strong>Layout</strong>
+                        <span>Estrutura preparada para modo compacto/expandido.</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card" id="secaoFerramentasGestaoDesktop" style="display:none;">
+                <h2>Ferramentas de Gestão</h2>
+                <div class="admin-shortcuts-grid" id="atalhosGestaoDesktop"></div>
+            </section>
+
+            <section class="card">
+                <h2>Sessão</h2>
+                <button id="btnLogoutPerfilDesktop" type="button" class="btn btn-danger" style="max-width: 260px;">Sair da Conta</button>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260519-ui-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="perfil.js?v=20260519-ui-ajustes"></script>
+</body>
+</html>
+
+
+
+
+
+

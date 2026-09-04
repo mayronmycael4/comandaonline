@@ -1,0 +1,208 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="mobile-routing.js"></script>
+    <meta name="theme-color" content="#8B4513">
+    <title>Comanda Online - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .dashboard-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .dashboard-header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        .dashboard-header h1 {
+            color: white;
+            margin: 0;
+        }
+        .dashboard-header p {
+            margin: 5px 0 0;
+            opacity: 0.9;
+        }
+        .dashboard-header .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .dashboard-header .btn-logout {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .dashboard-header .btn-logout:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-card .label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .funcionario-comandas {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .funcionario-comandas h4 {
+            margin: 0 0 10px;
+            color: #667eea;
+        }
+        .funcionario-comandas .comandas-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .comanda-tag {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+        .comanda-tag.fechada {
+            background: #e53e3e;
+        }
+        .btn-acao {
+            margin-left: 10px;
+        }
+        @media (max-width: 768px) {
+            .dashboard-header-top {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #btnLogoutDesktop {
+                width: 100%;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 6px;
+            }
+            .stat-card {
+                padding: 10px 6px;
+                border-radius: 10px;
+            }
+            .stat-card .number {
+                font-size: 1.05rem;
+                line-height: 1.1;
+            }
+            .stat-card .label {
+                font-size: 0.65rem;
+                line-height: 1.15;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h2>Menu Principal</h2>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="number" id="statComandasAbertas">0</div>
+                    <div class="label">Comandas Abertas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="statComandasFechadas">0</div>
+                    <div class="label">Comandas Fechadas Hoje</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="statTotalVendas">R$ 0,00</div>
+                    <div class="label">Total Vendas Hoje</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="statFuncionarios">0</div>
+                    <div class="label">Funcionários Ativos</div>
+                </div>
+            </div>
+
+            <section class="card">
+                <h2>Criar Nova Comanda</h2>
+                <form id="formComanda">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="numeroMesa">Número da Mesa</label>
+                            <input type="text" id="numeroMesa" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="funcionarioResponsavel">Funcionário Responsável</label>
+                            <select id="funcionarioResponsavel" required>
+                                <option value="">Selecione...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Criar Comanda</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>Comandas Abertas</h2>
+                <div id="listaComandasAbertas" class="lista-grid">
+                    <p class="empty">Nenhuma comanda aberta.</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Comandas Fechadas</h2>
+                <div id="listaComandasFechadas" class="lista-grid">
+                    <p class="empty">Nenhuma comanda fechada.</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Comandas por Funcionário</h2>
+                <div id="comandasPorFuncionario">
+                    <p class="empty">Nenhum funcionário cadastrado.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js"></script>
+    <script src="comanda-module.js?v=20260505-acentos"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="index.js"></script>
+</body>
+</html>
+
+
+
+
+
+

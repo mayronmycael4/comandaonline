@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#8B4513">
+    <title>Caixa - Mobile</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-first.css?v=20260417-navfit">
+</head>
+<body>
+    <header>
+        <div class="brand-block">
+            <div class="brand-logo-wrap" id="brandLogoWrapCaixa"></div>
+            <div class="brand-text-wrap">
+                <div class="brand-title" id="nomeEmpresaHeaderCaixa">Comanda</div>
+                <div class="brand-subtitle">Caixa</div>
+            </div>
+        </div>
+        <button id="btnLogoutCaixa" type="button" class="btn-logout">Sair</button>
+    </header>
+
+    <div class="container mobile-dashboard-page">
+        <main>
+            <section class="card">
+                <h2>Resumo Financeiro</h2>
+                <div class="stats-grid mobile-stats-grid">
+                    <div class="stat-card">
+                        <div class="number" id="caixaTotalHoje">R$ 0</div>
+                        <div class="label">Total Hoje</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="caixaComandasHoje">0</div>
+                        <div class="label">Fechadas Hoje</div>
+                    </div>
+                </div>
+                <p id="caixaResumo" class="hint">Carregando fechamento...</p>
+            </section>
+
+            <section class="card">
+                <h2>Ultimas Comandas Fechadas</h2>
+                <div id="listaCaixaMobile" class="lista-grid">
+                    <p class="empty">Nenhuma comanda fechada.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260417-mobile-logo"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="comanda-module.js?v=20260505-acentos"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="mobile-navbar.js?v=20260505-mobile-ajustes"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="caixa-mobile.js"></script>
+</body>
+</html>
+
+
+
+
+

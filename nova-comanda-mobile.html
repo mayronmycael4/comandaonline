@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Comandas">
+    <meta name="theme-color" content="#c62828">
+    <title>Nova Comanda - Mobile</title>
+    <link rel="manifest" href="manifest.php">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-first.css?v=20260417-navfit">
+</head>
+<body>
+    <header>
+        <div class="brand-block">
+            <div class="brand-logo-wrap" id="brandLogoWrapNova"></div>
+            <div class="brand-text-wrap">
+                <div class="brand-title" id="nomeEmpresaHeaderNova">Comanda</div>
+                <div class="brand-subtitle">Nova Comanda</div>
+            </div>
+        </div>
+        <button id="btnLogoutNova" type="button" class="btn-logout">Sair</button>
+    </header>
+
+    <div class="container mobile-dashboard-page">
+        <main>
+            <section class="card">
+                <h2>Abertura Rápida</h2>
+                <p class="hint">Crie uma nova comanda com poucos toques.</p>
+                <form id="formNovaComandaMobile">
+                    <div class="form-group">
+                        <label for="numeroMesaNovaMobile">Número da Mesa</label>
+                        <input type="text" id="numeroMesaNovaMobile" placeholder="Ex: 12, A4" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="funcionarioResponsavelNovaMobile">Responsável</label>
+                        <select id="funcionarioResponsavelNovaMobile" required>
+                            <option value="">Selecione...</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Abrir Comanda</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>Resumo de Turno</h2>
+                <div class="stats-grid mobile-stats-grid">
+                    <div class="stat-card">
+                        <div class="number" id="statAbertasNovaMobile">0</div>
+                        <div class="label">Abertas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statFechadasNovaMobile">0</div>
+                        <div class="label">Fechadas Hoje</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260417-mobile-logo"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="mobile-navbar.js?v=20260505-mobile-ajustes"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="nova-comanda-mobile.js"></script>
+</body>
+</html>
+
+
+
+
+

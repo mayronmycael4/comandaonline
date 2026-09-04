@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Comandas">
+    <meta name="theme-color" content="#c62828">
+    <title>Cozinha - Pedidos Pendentes</title>
+    <link rel="manifest" href="manifest.php">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-first.css?v=20260423-cozinha-header-fix">
+</head>
+<body class="cozinha-mobile-body">
+    <header class="cozinha-mobile-header">
+        <div class="brand-block">
+            <div class="brand-logo-wrap" id="brandLogoWrapCozinha"></div>
+            <div class="brand-text-wrap">
+                <div class="brand-title" id="nomeEmpresaHeaderCozinha">Cozinha</div>
+                <div class="brand-subtitle">Painel da cozinha</div>
+            </div>
+        </div>
+        <div class="cozinha-header-status" aria-label="Status do painel da cozinha">
+            <span class="cozinha-header-status-title">Pedidos pendentes</span>
+            <span class="cozinha-header-status-subtitle">Atualização em tempo real</span>
+        </div>
+        <div class="cozinha-header-actions">
+            <button id="btnSomCozinha" type="button" class="btn-cozinha-icon" title="Som de notificação" aria-label="Ativar/desativar som">🔔</button>
+            <button id="btnFullscreenMobile" type="button" class="btn-cozinha-icon" title="Tela cheia" aria-label="Alternar tela cheia">⛶</button>
+            <button id="btnLogoutCozinha" type="button" class="btn-logout btn-logout--compact">Sair</button>
+        </div>
+    </header>
+
+    <div class="container cozinha-page admin-mobile-page">
+        <main>
+
+            <section class="cozinha-status-bar" id="cozinhaStatusBar">
+                <span id="cozinhaContadorPendentes" class="cozinha-contador">0 pedidos aguardando</span>
+                <span id="cozinhaUltimaAtualizacao" class="cozinha-ultima-atualizacao">—</span>
+            </section>
+
+            <div class="cozinha-toolbar" id="cozinhaToolbar">
+                <button type="button" id="btnLimparCozinhaMobile" class="btn btn-light cozinha-toolbar-action">Limpar painel</button>
+                <div class="status-chips">
+                    <button type="button" class="status-chip active" data-cozinha-view="pendente">Pendentes</button>
+                    <button type="button" class="status-chip" data-cozinha-view="todos">Todos</button>
+                </div>
+                <div class="status-chips">
+                    <button type="button" class="status-chip active" data-cozinha-group="comanda">Por Mesa</button>
+                    <button type="button" class="status-chip" data-cozinha-group="categoria">Por Tipo</button>
+                </div>
+                <div class="status-chips">
+                    <button type="button" class="status-chip active" data-kds-setor="cozinha">Cozinha</button>
+                    <button type="button" class="status-chip" data-kds-setor="churrasqueira">Churrasqueira</button>
+                    <button type="button" class="status-chip" data-kds-setor="bar">Bar</button>
+                </div>
+                <button type="button" id="btnProntoLoteMobile" class="btn btn-secondary">Marcar pendentes visíveis como prontos</button>
+            </div>
+
+            <div id="cozinhaListaMobile" class="cozinha-lista">
+                <div class="cozinha-empty">
+                    <span>🍽️</span>
+                    <p>Nenhum pedido pendente no momento.</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260417-mobile-logo"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="mobile-navbar.js?v=20260505-mobile-ajustes"></script>
+    <script src="pwa-register.js?v=20260518-sw-refresh"></script>
+    <script src="cozinha-shared.js?v=20260518-sql-timebase"></script>
+    <script src="cozinha-mobile.js?v=20260518-timefix-force"></script>
+</body>
+</html>
+
+
+
+
+
+

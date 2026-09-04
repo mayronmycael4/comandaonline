@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#8B4513">
+    <title>Comanda Online - Setup do Banco de Dados</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-first.css">
+    <style>
+        .setup-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .setup-box {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .setup-box h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+        .step {
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f7fafc;
+        }
+        .step.success {
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+        }
+        .step.error {
+            background: #fff5f5;
+            border: 2px solid #feb2b2;
+        }
+        .step h3 {
+            margin: 0 0 10px;
+            color: #333;
+        }
+        .step p {
+            margin: 0;
+            color: #666;
+        }
+        .btn-full {
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body class="no-mobile-header">
+    <div class="setup-container">
+        <div class="setup-box">
+            <h1>Setup do Banco de Dados</h1>
+            
+            <div id="step1" class="step">
+                <h3>1. Criar Banco de Dados</h3>
+                <p>Clique no botão abaixo para criar o banco de dados automaticamente.</p>
+                <button id="btnInstalarBanco" type="button" class="btn btn-primary" style="margin-top: 10px; width: 100%;">
+                    🚀 Instalar Banco de Dados Automaticamente
+                </button>
+                <p id="resultadoInstalacao" style="margin-top: 10px;"></p>
+                <hr style="margin: 15px 0;">
+                <p style="font-size: 0.9rem; color: #666;">Ou faça manualmente:</p>
+                <ol style="margin-top: 5px; padding-left: 20px; font-size: 0.9rem;">
+                    <li>Acesse <a href="http://localhost/phpmyadmin" target="_blank">phpMyAdmin</a></li>
+                    <li>Clique em "Importar"</li>
+                    <li>Selecione o arquivo <code>comanda_online.sql</code></li>
+                    <li>Clique em "Executar"</li>
+                </ol>
+            </div>
+            
+            <div id="step2" class="step">
+                <h3>2. Verificar Conexão</h3>
+                <p>Testar se a API consegue conectar ao banco de dados.</p>
+                <button id="btnTestarConexao" type="button" class="btn btn-secondary" style="margin-top: 10px;">Testar Conexão</button>
+                <p id="resultadoConexao" style="margin-top: 10px;"></p>
+            </div>
+            
+            <div id="step3" class="step">
+                <h3>3. Configurar Empresa</h3>
+                <p>Configure os dados iniciais da empresa.</p>
+                <button id="btnIrLogin" type="button" class="btn btn-primary btn-full">
+                    Ir para Configuração Inicial
+                </button>
+            </div>
+            
+            <div style="margin-top: 30px; text-align: center;">
+                <p style="color: #999; font-size: 0.9rem;">
+                    Após configurar o banco de dados, todas as informações serão salvas no MySQL.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="branding.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="setup-init.js"></script>
+    <script src="setup-actions.js"></script>
+</body>
+</html>
+
+
+
+
+
+

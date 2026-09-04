@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comanda Online - Compras</title>
+    <link rel="stylesheet" href="style.css?v=20260417-desktop">
+    <style>
+        .compras-wrap { max-width: 1280px; margin: 0 auto; padding: 16px; }
+        .compras-grid { display: grid; grid-template-columns: 1.15fr 0.95fr; gap: 18px; align-items: start; }
+        .compras-toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+        .compras-hero { border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; background: linear-gradient(135deg, rgba(255, 193, 7, 0.12), rgba(255, 106, 0, 0.08)); }
+        .compras-hero h2 { margin: 0 0 6px; }
+        .compras-hero p { margin: 0; color: var(--text-soft); line-height: 1.5; }
+        .compras-card { background: linear-gradient(180deg, var(--surface), var(--surface-2)); border: 1px solid var(--border); border-radius: 14px; padding: 16px; box-shadow: var(--shadow, 0 8px 24px rgba(0,0,0,.08)); }
+        .compras-card h2, .compras-card h3 { margin-top: 0; }
+        .compras-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .compras-form .full { grid-column: 1 / -1; }
+        .compras-form input, .compras-form select, .compras-form textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+        .compras-list { display: grid; gap: 12px; }
+        .compra-item { border: 1px solid var(--border); border-radius: 14px; padding: 14px; background: rgba(255,255,255,.03); }
+        .compra-top { display:flex; justify-content: space-between; gap: 10px; align-items:flex-start; margin-bottom: 10px; }
+        .compra-title { font-weight: 800; font-size: 1.05rem; margin: 0; }
+        .compra-meta { color: var(--text-soft); font-size: .92rem; margin: 4px 0 0; }
+        .compra-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+        .compra-actions input, .compra-actions textarea { width: 100%; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+        .compra-actions textarea { min-height: 76px; grid-column: 1 / -1; resize: vertical; }
+        .compra-rodape { display:flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; align-items:center; margin-top: 8px; }
+        .pill { display:inline-flex; align-items:center; gap: 6px; padding: 5px 10px; border-radius: 999px; font-size: .82rem; font-weight: 700; }
+        .pill.alta { background: rgba(255, 59, 48, .15); color: var(--c-red); }
+        .pill.media { background: rgba(255, 193, 7, .15); color: #a56b00; }
+        .pill.baixa { background: rgba(46, 125, 50, .14); color: #2f7a34; }
+        .status-ok { color: var(--c-green, #2e7d32); font-weight: 700; }
+        .muted { color: var(--text-soft); }
+        @media (max-width: 980px) { .compras-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 720px) { .compras-form, .compra-actions { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="compras-wrap">
+        <header>
+            <h1>Compras e Recebimento</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main class="compras-grid">
+            <section>
+                <div class="compras-hero">
+                    <h2>Como funciona</h2>
+                    <p>Esta tela centraliza a lista de compras, o recebimento e a atualização do custo médio. Quando você marca um item como recebido, o sistema registra fornecedor, nota fiscal, movimenta o estoque e recalcula o custo médio automaticamente.</p>
+                </div>
+                <section class="compras-card">
+                    <h2>Recebimentos pendentes</h2>
+                    <div class="compras-toolbar">
+                        <button id="btnAtualizarCompras" class="btn btn-secondary">Atualizar</button>
+                        <button id="btnVerTodasCompras" class="btn btn-light">Ver concluídas</button>
+                    </div>
+                    <div id="comprasLista" class="compras-list">
+                        <p class="empty">Carregando...</p>
+                    </div>
+                </section>
+            </section>
+
+            <section class="compras-card">
+                <h2>Adicionar item manual</h2>
+                <p class="muted" style="margin-bottom: 14px; line-height: 1.5;">Use este bloco para lançar itens faltantes rapidamente. Se o item já existir no estoque, o recebimento atualizado abaixo vai movimentar o inventário; se não existir, ele fica como sugestão na fila de compras.</p>
+                <div class="compras-toolbar" style="margin-bottom: 16px;">
+                    <span class="pill media">Pendente</span>
+                    <span class="pill baixa">Recebido</span>
+                    <span class="pill alta">Alta prioridade</span>
+                </div>
+                <form id="formItemCompra" class="compras-form">
+                    <div>
+                        <label>Estoque ID</label>
+                        <input type="number" id="estoqueId" min="1" placeholder="Opcional">
+                    </div>
+                    <div>
+                        <label>Nome do item</label>
+                        <input type="text" id="nomeItem" required placeholder="Ex: Cerveja Lata">
+                    </div>
+                    <div>
+                        <label>Quantidade necessária</label>
+                        <input type="number" id="quantidadeNecessaria" min="0.01" step="0.01" required value="1">
+                    </div>
+                    <div>
+                        <label>Quantidade mínima</label>
+                        <input type="number" id="quantidadeMinima" min="0" step="0.01" value="0">
+                    </div>
+                    <div>
+                        <label>Unidade</label>
+                        <input type="text" id="unidade" value="un">
+                    </div>
+                    <div>
+                        <label>Prioridade</label>
+                        <select id="prioridade">
+                            <option value="baixa">Baixa</option>
+                            <option value="media" selected>Média</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+                    <div class="full">
+                        <button type="submit" class="btn btn-primary">Salvar na lista</button>
+                    </div>
+                </form>
+
+                <h3 style="margin-top: 22px;">Resumo</h3>
+                <div id="comprasResumo" class="muted">Nenhum dado carregado.</div>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260519-ui-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="compras-init.js?v=20260519-ui-ajustes"></script>
+</body>
+</html>

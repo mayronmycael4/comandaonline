@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#c4161c">
+    <title>Cardápio da Mesa</title>
+    <style>
+        :root {
+            --bg: #fff5eb;
+            --surface: #ffffff;
+            --text: #23140c;
+            --muted: #7a5a3a;
+            --brand: #c4161c;
+            --brand-2: #ff7f11;
+            --line: rgba(139, 15, 20, 0.2);
+            --ok: #1f9d55;
+            --warn: #ff9f1c;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 10% 0%, rgba(255, 198, 95, 0.35), transparent 35%),
+                radial-gradient(circle at 92% 100%, rgba(196, 22, 28, 0.16), transparent 38%),
+                var(--bg);
+        }
+
+        .menu-wrap {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 12px 12px 96px;
+        }
+
+        .hero {
+            background: linear-gradient(145deg, #fff, #ffeede);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 14px;
+            box-shadow: 0 10px 24px rgba(35, 20, 12, 0.08);
+        }
+
+        .hero-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hero-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+        }
+
+        .hero h1 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .hero p {
+            margin: 4px 0 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .pill-row {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .categorias {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .cat-btn {
+            border: 1px solid var(--line);
+            background: #fff;
+            color: var(--brand);
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .cat-btn.active {
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .produtos {
+            margin-top: 14px;
+            display: grid;
+            gap: 10px;
+        }
+
+        .produto {
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: 78px 1fr auto;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .produto img {
+            width: 78px;
+            height: 78px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #f5e6dc;
+        }
+
+        .produto h3 {
+            margin: 0 0 4px;
+            font-size: 1rem;
+        }
+
+        .produto .desc {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.86rem;
+        }
+
+        .produto .preco {
+            margin-top: 6px;
+            font-weight: 800;
+            color: var(--brand);
+        }
+
+        .btn {
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            padding: 10px 12px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #fff;
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+
+        .cart-fab {
+            position: fixed;
+            right: 14px;
+            bottom: 14px;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            border: none;
+            color: #fff;
+            background: linear-gradient(135deg, var(--brand), var(--brand-2));
+            box-shadow: 0 12px 24px rgba(150, 33, 10, 0.35);
+            font-size: 1.3rem;
+            z-index: 60;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #111;
+            color: #fff;
+            font-size: 0.72rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .panel {
+            margin-top: 14px;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 12px;
+        }
+
+        .panel h2 {
+            margin: 0 0 8px;
+            font-size: 1rem;
+        }
+
+        .pedidos-empty {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .pedido-item {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #fffdfa;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 6px;
+        }
+
+        .status.enviado,
+        .status.em_preparo {
+            background: #fff3df;
+            color: #7f5300;
+        }
+
+        .status.pronto,
+        .status.entregue {
+            background: #e8fff1;
+            color: #0f6a3a;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 100;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .modal.show { display: flex; }
+
+        .modal-sheet {
+            width: min(720px, 100%);
+            max-height: 90vh;
+            overflow: auto;
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid var(--line);
+            padding: 14px;
+        }
+
+        .field {
+            display: grid;
+            gap: 4px;
+            margin-bottom: 10px;
+        }
+
+        .field label {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .field input,
+        .field textarea,
+        .field select {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 9px;
+            font: inherit;
+        }
+
+        .inline-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        @media (min-width: 980px) {
+            .menu-wrap {
+                display: grid;
+                grid-template-columns: 1.4fr 1fr;
+                gap: 14px;
+                align-items: start;
+            }
+
+            .menu-main,
+            .menu-side {
+                min-width: 0;
+            }
+
+            .cart-fab { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-wrap">
+        <section class="menu-main">
+            <div class="hero">
+                <div class="hero-top">
+                    <img class="hero-logo" src="icon-192.png" alt="Logo">
+                    <div>
+                        <h1 id="nomeLoja">Cardápio da Mesa</h1>
+                        <p id="subLoja">Carregando dados da mesa...</p>
+                    </div>
+                </div>
+                <div class="pill-row">
+                    <span class="pill" id="pillMesa">Mesa --</span>
+                    <span class="pill" id="pillComanda">Comanda --</span>
+                </div>
+                <div class="categorias" id="menuCategorias"></div>
+            </div>
+
+            <div class="produtos" id="produtosLista"></div>
+        </section>
+
+        <aside class="menu-side">
+            <div class="panel">
+                <h2>Identificacao do Cliente</h2>
+                <div class="field">
+                    <label for="clienteNome">Nome</label>
+                    <input id="clienteNome" maxlength="120" placeholder="Ex: Joao - Mesa 12">
+                </div>
+                <div class="field">
+                    <label for="clienteObs">Observacao geral (opcional)</label>
+                    <textarea id="clienteObs" rows="2" maxlength="255" placeholder="Sem cebola, alergia etc."></textarea>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>Meus Pedidos da Mesa</h2>
+                <div id="meusPedidos" class="pedidos-empty">Nenhum pedido enviado ainda.</div>
+            </div>
+        </aside>
+    </div>
+
+    <button class="cart-fab" id="abrirCarrinho" title="Ver carrinho">
+        <span>🛒</span>
+        <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+
+    <div class="modal" id="modalProduto">
+        <div class="modal-sheet" id="modalProdutoContent"></div>
+    </div>
+
+    <div class="modal" id="modalCarrinho">
+        <div class="modal-sheet" id="modalCarrinhoContent"></div>
+    </div>
+
+    <script src="menu-mobile.js?v=20260519-qr-menu"></script>
+</body>
+</html>

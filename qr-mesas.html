@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR de Mesas - Comanda Online</title>
+    <link rel="stylesheet" href="style.css?v=20260519-qr-mesas">
+    <style>
+        .qr-toolbar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .qr-toolbar .field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .qr-toolbar label {
+            font-weight: 700;
+        }
+
+        .qr-toolbar input,
+        .qr-toolbar textarea {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font: inherit;
+            width: 100%;
+            background: #fff;
+        }
+
+        .qr-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 12px;
+        }
+
+        .qr-card {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            background: var(--surface);
+            display: grid;
+            gap: 8px;
+        }
+
+        .qr-card h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .qr-image {
+            width: 100%;
+            max-width: 168px;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            border-radius: 8px;
+            border: 1px dashed var(--border);
+            background: #fff;
+            margin: 0 auto;
+        }
+
+        .qr-link {
+            font-size: 0.78rem;
+            color: var(--text-soft);
+            word-break: break-all;
+        }
+
+        .qr-card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .hint {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: var(--text-soft);
+        }
+
+        @media print {
+            header,
+            .menu-toggle,
+            .menu-overlay,
+            .mobile-menu,
+            .mobile-menu-hint,
+            .qr-toolbar,
+            .qr-actions,
+            .hint,
+            #btnPrintQrs,
+            #btnCopiarTodos,
+            #btnGerarQr,
+            #btnLimparQr {
+                display: none !important;
+            }
+
+            body {
+                background: #fff !important;
+                padding-top: 0 !important;
+            }
+
+            .container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+
+            .qr-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .qr-card {
+                border: 1px solid #ddd !important;
+                page-break-inside: avoid;
+            }
+
+            .qr-link {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>QR de Mesas</h1>
+    </header>
+
+    <div class="container">
+        <main>
+            <section class="card">
+                <h2>Gerar QRs em Lote</h2>
+
+                <div class="qr-toolbar">
+                    <div class="field">
+                        <label for="mesaInicial">Mesa inicial</label>
+                        <input id="mesaInicial" type="number" min="1" step="1" value="1">
+                    </div>
+                    <div class="field">
+                        <label for="mesaFinal">Mesa final</label>
+                        <input id="mesaFinal" type="number" min="1" step="1" value="20">
+                    </div>
+                    <div class="field" style="grid-column: 1 / -1;">
+                        <label for="mesasCustom">Ou informe mesas especificas (ex: 1,2,10,15)</label>
+                        <textarea id="mesasCustom" rows="2" placeholder="Opcional"></textarea>
+                    </div>
+                </div>
+
+                <div class="qr-actions">
+                    <button id="btnGerarQr" type="button" class="btn btn-primary">Gerar QRs</button>
+                    <button id="btnPrintQrs" type="button" class="btn btn-secondary">Imprimir QRs</button>
+                    <button id="btnCopiarTodos" type="button" class="btn btn-secondary">Copiar URLs</button>
+                    <button id="btnLimparQr" type="button" class="btn btn-danger">Limpar</button>
+                </div>
+
+                <p class="hint">Dica: imprima e cole um QR por mesa. Cada QR ja abre o cardapio da mesa com token seguro.</p>
+            </section>
+
+            <section class="card">
+                <h2>QRs Gerados</h2>
+                <div id="qrGrid" class="qr-grid"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260417-mobile-logo"></script>
+    <script src="api.js?v=20260519-qr-mesas"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260417-login-refresh"></script>
+    <script src="menu-geral.js?v=20260519-ui-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="qr-mesas.js?v=20260519-qr-mesas"></script>
+</body>
+</html>

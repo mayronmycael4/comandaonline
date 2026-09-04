@@ -1,0 +1,18 @@
+# Local database credentials. Keep the example files versioned instead.
+db_runtime_config.php
+admin/db_runtime_config.php
+
+# Local development and editor files.
+.vscode/
+.idea/
+*.log
+
+# Runtime uploads and generated backups.
+admin/storage/logos/*
+!admin/storage/logos/.gitkeep
+backups/
+*.zip
+
+# Temporary local test artifacts and retired Laravel application.
+tmp_*
+saas-app/

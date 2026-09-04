@@ -1,0 +1,134 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comanda Online - Funcionários</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gerenciar Funcionários</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Cadastrar Novo Funcionário</h2>
+                <form id="formFuncionario">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nomeFuncionario">Nome Completo</label>
+                            <input type="text" id="nomeFuncionario" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="loginFuncionario">Login</label>
+                            <input type="text" id="loginFuncionario" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="senhaFuncionario">Senha</label>
+                            <input type="password" id="senhaFuncionario" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tipoFuncionario">Tipo</label>
+                            <select id="tipoFuncionario">
+                                <option value="normal">Funcionário</option>
+                                <option value="admin">Administrador</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Permissões de acesso</label>
+                        <div class="permissoes-grid" id="permissoesNovoFuncionario">
+                            <label><input type="checkbox" value="dashboard" checked> Dashboard</label>
+                            <label><input type="checkbox" value="comandas" checked> Comandas</label>
+                            <label><input type="checkbox" value="cozinha"> Cozinha</label>
+                            <label><input type="checkbox" value="produtos"> Produtos</label>
+                            <label><input type="checkbox" value="estoque"> Estoque</label>
+                            <label><input type="checkbox" value="clientes"> Clientes</label>
+                            <label><input type="checkbox" value="relatorios"> Relatórios</label>
+                            <label><input type="checkbox" value="backup"> Backup</label>
+                            <label><input type="checkbox" value="funcionarios"> Funcionários</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cadastrar Funcionário</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>Funcionários Cadastrados</h2>
+                <div id="listaFuncionarios">
+                    <p class="empty">Nenhum funcionário cadastrado.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal de Edição -->
+    <div id="modalEditar" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Funcionário</h3>
+                <button type="button" class="modal-close" id="btnFecharModalFuncionario">&times;</button>
+            </div>
+            <form id="formEditar">
+                <input type="hidden" id="editarId">
+                <div class="form-group">
+                    <label for="editarNome">Nome</label>
+                    <input type="text" id="editarNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="editarLogin">Login</label>
+                    <input type="text" id="editarLogin" required>
+                </div>
+                <div class="form-group">
+                    <label for="editarSenha">Nova Senha (deixe em branco para manter)</label>
+                    <input type="password" id="editarSenha">
+                </div>
+                <div class="form-group">
+                    <label for="editarTipo">Tipo</label>
+                    <select id="editarTipo">
+                        <option value="normal">Funcionário</option>
+                        <option value="admin">Administrador</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Permissões de acesso</label>
+                    <div class="permissoes-grid" id="permissoesEditarFuncionario">
+                        <label><input type="checkbox" value="dashboard"> Dashboard</label>
+                        <label><input type="checkbox" value="comandas"> Comandas</label>
+                        <label><input type="checkbox" value="cozinha"> Cozinha</label>
+                        <label><input type="checkbox" value="produtos"> Produtos</label>
+                        <label><input type="checkbox" value="estoque"> Estoque</label>
+                        <label><input type="checkbox" value="clientes"> Clientes</label>
+                        <label><input type="checkbox" value="relatorios"> Relatórios</label>
+                        <label><input type="checkbox" value="backup"> Backup</label>
+                        <label><input type="checkbox" value="funcionarios"> Funcionários</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" id="btnCancelarModalFuncionario">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="branding.js"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="funcionarios-init.js"></script>
+</body>
+</html>
+
+
+
+
+
+

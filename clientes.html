@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comanda Online - Clientes</title>
+    <link rel="stylesheet" href="style.css?v=20260417-clientes">
+    <style>
+        .clientes-search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .clientes-search-bar input {
+            flex: 1;
+            min-width: 200px;
+        }
+        .clientes-table-wrap {
+            overflow-x: auto;
+        }
+        .clientes-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        .clientes-table th {
+            background: var(--surface-2, #f0f0f0);
+            color: var(--text, #333);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border, #ddd);
+        }
+        .clientes-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border, #eee);
+            color: var(--text, #333);
+            vertical-align: middle;
+        }
+        .clientes-table tr:hover td { background: var(--surface-hover, rgba(0,0,0,0.03)); }
+        .clientes-table .btn-sm { padding: 4px 12px; font-size: 0.82rem; }
+        .clientes-empty { text-align: center; padding: 40px; color: var(--text-muted, #888); }
+        .whatsapp-link { color: #25D366; text-decoration: none; font-size: 1.1rem; }
+        .whatsapp-link:hover { text-decoration: underline; }
+        .badge-sem-dados { font-size: 0.78rem; color: var(--text-muted, #aaa); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👥 Clientes</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <section class="card">
+                <div class="clientes-search-bar">
+                    <input type="search" id="buscaClientes" placeholder="Buscar por nome, telefone ou CPF..." autocomplete="off">
+                    <span id="totalClientes" style="line-height:2.2rem; color:var(--text-muted,#888); font-size:0.9rem;"></span>
+                </div>
+                <div class="clientes-table-wrap">
+                    <table class="clientes-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Telefone</th>
+                                <th>CPF</th>
+                                <th>WhatsApp</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientesTableBody">
+                            <tr><td colspan="5" class="clientes-empty">Carregando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Editar Cliente -->
+    <div id="modalEditarCliente" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Cliente</h3>
+                <button type="button" class="modal-close" id="btnFecharModalCliente">&times;</button>
+            </div>
+            <form id="formEditarCliente">
+                <input type="hidden" id="editClienteId">
+                <div class="form-group">
+                    <label for="editClienteNome">Nome</label>
+                    <input type="text" id="editClienteNome" required>
+                </div>
+                <div class="form-group">
+                    <label for="editClienteTelefone">Telefone / WhatsApp</label>
+                    <input type="tel" id="editClienteTelefone" placeholder="(99) 99999-9999">
+                </div>
+                <div class="form-group">
+                    <label for="editClienteCpf">CPF</label>
+                    <input type="text" id="editClienteCpf" placeholder="000.000.000-00" maxlength="14">
+                </div>
+                <div class="form-group">
+                    <label for="editClienteEmail">E-mail</label>
+                    <input type="email" id="editClienteEmail">
+                </div>
+                <div class="form-group">
+                    <label for="editClienteNascimento">Data de nascimento</label>
+                    <input type="date" id="editClienteNascimento">
+                </div>
+                <div class="form-group">
+                    <label for="editClienteObservacoes">Observações</label>
+                    <textarea id="editClienteObservacoes" rows="3" placeholder="Preferências, histórico ou observações gerais"></textarea>
+                </div>
+                <div class="form-group">
+                    <label style="display:flex;gap:8px;align-items:center;">
+                        <input type="checkbox" id="editClienteConsentimentoMarketing">
+                        Cliente autoriza contato de marketing (LGPD)
+                    </label>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" id="btnCancelarModalCliente">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="branding.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="menu-geral.js?v=20260417-clientes"></script>
+    <script src="menu-admin.js?v=20260417-clientes"></script>
+    <script src="clientes-init.js?v=20260417-clientes"></script>
+</body>
+</html>

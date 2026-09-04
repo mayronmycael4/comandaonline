@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#8B4513">
+    <script src="mobile-routing.js"></script>
+    <title>Comanda Online - Todas as Comandas</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-first.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Todas as Comandas</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Filtrar Comandas</h2>
+                <div class="mobile-comanda-tools">
+                    <div class="form-group">
+                        <label for="buscaComanda">Busca Rápida</label>
+                        <input type="text" id="buscaComanda" placeholder="Mesa, cliente ou responsável">
+                    </div>
+                    <div class="status-chips" id="statusChipsComandas">
+                        <button type="button" class="status-chip active" data-quick-status="todos">Todas</button>
+                        <button type="button" class="status-chip" data-quick-status="aberta">Abertas</button>
+                        <button type="button" class="status-chip" data-quick-status="fechada">Fechadas</button>
+                        <button type="button" class="status-chip" data-quick-status="cancelada">Canceladas</button>
+                    </div>
+                    <p id="resumoComandasMobile" class="hint">Use os filtros para encontrar comandas rapidamente.</p>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="filtroStatus">Status</label>
+                        <select id="filtroStatus">
+                            <option value="todos">Todos</option>
+                            <option value="aberta">Abertas</option>
+                            <option value="fechada">Fechadas</option>
+                            <option value="cancelada">Canceladas</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filtroFuncionario">Funcionário</label>
+                        <select id="filtroFuncionario">
+                            <option value="todos">Todos</option>
+                        </select>
+                    </div>
+                </div>
+                <button id="btnAplicarFiltros" type="button" class="btn btn-primary">Aplicar Filtros</button>
+            </section>
+
+            <section class="card">
+                <h2>Comandas Abertas</h2>
+                <div id="listaComandasAbertas" class="lista-grid">
+                    <p class="empty">Nenhuma comanda aberta.</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Comandas Fechadas</h2>
+                <div id="listaComandasFechadas" class="lista-grid">
+                    <p class="empty">Nenhuma comanda fechada.</p>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Histórico - Comandas Abertas Recentes</h2>
+                <div id="ultimasComandas" class="lista-detalhada">
+                    <p class="empty">Nenhuma comanda aberta recentemente.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260828a"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="comanda-module.js?v=20260505-acentos"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="mobile-navbar.js?v=20260505-mobile-ajustes"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="comandas-init.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

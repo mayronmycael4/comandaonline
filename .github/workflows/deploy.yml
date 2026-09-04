@@ -1,0 +1,56 @@
+name: Deploy to InfinityFree
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Upload files via FTP
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Create production database configuration
+        env:
+          SAAS_DB_PASSWORD: ${{ secrets.SAAS_DB_PASSWORD }}
+        run: |
+          cat > admin/db_runtime_config.php <<EOF
+          <?php
+          return [
+              'host' => 'sql111.infinityfree.com',
+              'port' => 3306,
+              'dbname' => 'if0_40322863_saascomanda',
+              'user' => 'if0_40322863',
+              'pass' => '${SAAS_DB_PASSWORD}',
+              'shared_tenant_db' => 'if0_40322863_comanda_online',
+          ];
+          EOF
+
+      - name: Deploy to InfinityFree
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
+          protocol: ftp
+          local-dir: ./
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          exclude: |
+            **/.git*/**
+            **/.github/**
+            **/.vscode/**
+            **/.idea/**
+            **/*.sql
+            **/*.md
+            **/admin/storage/logos/**
+            **/saas-app/**

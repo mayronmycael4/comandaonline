@@ -1,0 +1,152 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#8B4513">
+    <script src="mobile-routing.js"></script>
+    <title>Comanda Online - Produtos</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-first.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cadastrar Produtos</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Cadastrar Produto</h2>
+                <form id="formProduto">
+                    <div class="form-group">
+                        <label for="nomeProduto">Nome do Produto</label>
+                        <input type="text" id="nomeProduto" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="categoriaProduto">Categoria</label>
+                            <select id="categoriaProduto" required>
+                                <option value="">Selecione...</option>
+                                <option value="bebidas">Bebidas</option>
+                                <option value="espetos">Espetos</option>
+                                <option value="hamburgers">Hamburgers</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="precoProduto">Preço (R$)</label>
+                            <input type="number" id="precoProduto" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Cadastrar Produto</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>Produtos Cadastrados</h2>
+
+                <div class="form-row" style="margin-bottom: 10px;">
+                    <div class="form-group">
+                        <label for="buscaProduto">Buscar produto cadastrado</label>
+                        <input type="text" id="buscaProduto" placeholder="Ex.: X-Salada, Coca, Espeto...">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtroCategoriaProduto">Filtrar categoria</label>
+                        <select id="filtroCategoriaProduto">
+                            <option value="todos">Todas</option>
+                            <option value="bebidas">Bebidas</option>
+                            <option value="espetos">Espetos</option>
+                            <option value="hamburgers">Hamburgers</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="categoria-section">
+                    <h3>Bebidas</h3>
+                    <div id="listaBebidas" class="lista-produtos">
+                        <p class="empty">Nenhuma bebida cadastrada.</p>
+                    </div>
+                </div>
+
+                <div class="categoria-section">
+                    <h3>Espetos</h3>
+                    <div id="listaEspetos" class="lista-produtos">
+                        <p class="empty">Nenhum espeto cadastrado.</p>
+                    </div>
+                </div>
+
+                <div class="categoria-section">
+                    <h3>Hamburgers</h3>
+                    <div id="listaHamburgers" class="lista-produtos">
+                        <p class="empty">Nenhum hamburger cadastrado.</p>
+                    </div>
+                </div>
+
+                <div class="categoria-section">
+                    <h3>Outros</h3>
+                    <div id="listaOutros" class="lista-produtos">
+                        <p class="empty">Nenhum produto em outros.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div id="modalEditarProduto" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Produto</h3>
+                <button type="button" class="modal-close" id="btnFecharModalProduto">?-</button>
+            </div>
+            <form id="formEditarProduto">
+                <input type="hidden" id="editarProdutoId">
+                <div class="form-group">
+                    <label for="editarNomeProduto">Nome do Produto</label>
+                    <input type="text" id="editarNomeProduto" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editarCategoriaProduto">Categoria</label>
+                        <select id="editarCategoriaProduto" required>
+                            <option value="bebidas">Bebidas</option>
+                            <option value="espetos">Espetos</option>
+                            <option value="hamburgers">Hamburgers</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editarPrecoProduto">Preço (R$)</label>
+                        <input type="number" id="editarPrecoProduto" step="0.01" min="0" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" id="btnCancelarEdicaoProduto">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="branding.js"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js"></script>
+    <script src="comanda-module.js?v=20260505-acentos"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="mobile-navbar.js?v=20260505-mobile-ajustes"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="produtos.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+

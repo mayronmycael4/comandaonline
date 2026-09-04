@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auditoria</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .audit-wrap { max-width: 1200px; margin: 0 auto; padding: 16px; }
+        .audit-filters { display: grid; grid-template-columns: repeat(6, minmax(120px, 1fr)); gap: 8px; margin-bottom: 12px; }
+        .audit-filters input, .audit-filters select, .audit-filters button { padding: 8px; }
+        .audit-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .audit-table th, .audit-table td { border: 1px solid #ddd; padding: 6px; vertical-align: top; }
+        .audit-table th { background: #f6f6f6; }
+        .audit-meta { margin: 8px 0; color: #555; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="audit-wrap">
+        <h1>Auditoria</h1>
+        <div class="audit-filters">
+            <input type="date" id="fInicio">
+            <input type="date" id="fFim">
+            <input type="text" id="fAcao" placeholder="Acao">
+            <input type="text" id="fEntidade" placeholder="Entidade">
+            <input type="text" id="fBusca" placeholder="Busca livre">
+            <button id="btnPesquisar">Pesquisar</button>
+        </div>
+        <div class="audit-meta" id="auditMeta"></div>
+        <table class="audit-table">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Usuario</th>
+                    <th>Acao</th>
+                    <th>Entidade</th>
+                    <th>ID</th>
+                    <th>Detalhes</th>
+                </tr>
+            </thead>
+            <tbody id="auditBody"></tbody>
+        </table>
+    </div>
+
+    <script src="api.js?v=2026-05-18-a"></script>
+    <script src="storage.js?v=2026-05-18-a"></script>
+    <script src="auditoria-init.js?v=2026-05-18-a"></script>
+</body>
+</html>

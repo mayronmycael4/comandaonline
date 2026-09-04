@@ -1,0 +1,79 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#8B4513">
+    <title>Relatórios - Mobile</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-first.css?v=20260417-navfit">
+</head>
+<body>
+    <header>
+        <div class="brand-block">
+            <div class="brand-logo-wrap" id="brandLogoWrapRelatoriosMobile"></div>
+            <div class="brand-text-wrap">
+                <div class="brand-title" id="nomeEmpresaHeaderRelatoriosMobile">Comanda</div>
+                <div class="brand-subtitle">Relatórios</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mobile-dashboard-page admin-mobile-page">
+        <main>
+            <div class="tabs">
+                <button class="tab-btn active" type="button" data-tab="dia">Hoje</button>
+                <button class="tab-btn" type="button" data-tab="semana">Semana</button>
+                <button class="tab-btn" type="button" data-tab="mes">Mês</button>
+                <button class="tab-btn" type="button" data-tab="ano">Ano</button>
+                <button class="tab-btn" type="button" data-tab="personalizado">Custom</button>
+            </div>
+
+            <div id="tab-dia" class="tab-content active">
+                <div class="relatorio-card"><h3>Vendas de Hoje</h3><div class="relatorio-valor" id="valorDia">R$ 0,00</div><div class="relatorio-detalhes"></div><div class="categoria-list" id="categoriasDia"></div></div>
+                <div class="card"><h3>Vendas por Funcionário - Hoje</h3><div id="funcionariosDia"></div></div>
+            </div>
+            <div id="tab-semana" class="tab-content">
+                <div class="relatorio-card"><h3>Vendas da Semana</h3><div class="relatorio-valor" id="valorSemana">R$ 0,00</div><div class="relatorio-detalhes"></div><div class="categoria-list" id="categoriasSemana"></div></div>
+                <div class="card"><h3>Vendas por Funcionário - Semana</h3><div id="funcionariosSemana"></div></div>
+            </div>
+            <div id="tab-mes" class="tab-content">
+                <div class="relatorio-card"><h3>Vendas do Mês</h3><div class="relatorio-valor">R$ 0,00</div><div class="relatorio-detalhes"></div><div class="categoria-list"></div></div>
+                <div class="card"><h3>Vendas por Funcionário - Mês</h3><div id="funcionariosMes"></div></div>
+            </div>
+            <div id="tab-ano" class="tab-content">
+                <div class="relatorio-card"><h3>Vendas do Ano</h3><div class="relatorio-valor">R$ 0,00</div><div class="relatorio-detalhes"></div><div class="categoria-list"></div></div>
+                <div class="card"><h3>Vendas por Funcionário - Ano</h3><div id="funcionariosAno"></div></div>
+            </div>
+            <div id="tab-personalizado" class="tab-content">
+                <div class="card">
+                    <h3>Filtro Personalizado</h3>
+                    <div class="form-row">
+                        <div class="form-group"><label for="dataInicioPersonalizado">Data inicial</label><input type="date" id="dataInicioPersonalizado"></div>
+                        <div class="form-group"><label for="dataFimPersonalizado">Data final</label><input type="date" id="dataFimPersonalizado"></div>
+                    </div>
+                    <button class="btn btn-primary" type="button" id="btnAplicarFiltroPersonalizado">Aplicar filtro</button>
+                </div>
+                <div class="relatorio-card" id="cardPersonalizado" style="display:none; margin-top: 15px;"><h3>Vendas no Período</h3><div class="relatorio-valor">R$ 0,00</div><div class="relatorio-detalhes"></div><div class="categoria-list"></div></div>
+                <div class="card" id="funcCardPersonalizado" style="display:none;"><h3>Vendas por Funcionário - Período</h3><div id="funcionariosPersonalizado"></div></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260417-mobile-logo"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="mobile-navbar.js?v=20260505-mobile-ajustes"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="relatorios.js"></script>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,99 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Comandas">
+    <meta name="theme-color" content="#c62828">
+    <title>Início - Comanda Online</title>
+    <link rel="manifest" href="manifest.php">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-first.css?v=20260417-summary-compact">
+</head>
+<body>
+    <header>
+        <div class="brand-block">
+            <div class="brand-logo-wrap" id="brandLogoWrapMobile"></div>
+            <div class="brand-text-wrap">
+                <div class="brand-title" id="nomeEmpresaHeaderMobile">Comanda</div>
+                <div class="brand-subtitle">Mobile</div>
+            </div>
+        </div>
+        <button id="btnLogoutMobileHeader" type="button" class="btn-logout">Sair</button>
+    </header>
+
+    <div class="container mobile-dashboard-page">
+        <main>
+            <section class="card mobile-dashboard-hero">
+                <h2>Resumo</h2>
+                <div class="stats-grid mobile-stats-grid">
+                    <div class="stat-card">
+                        <div class="number" id="statComandasAbertasMobile">0</div>
+                        <div class="label">Abertas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="statComandasFechadasMobile">0</div>
+                        <div class="label">Fechadas</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Nova Comanda</h2>
+                <form id="formComandaMobile">
+                    <div class="form-group">
+                        <label for="numeroMesaMobile">Número da Mesa</label>
+                        <input type="text" id="numeroMesaMobile" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="funcionarioResponsavelMobile">Funcionário Responsável</label>
+                        <select id="funcionarioResponsavelMobile" required>
+                            <option value="">Selecione...</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Criar Comanda</button>
+                </form>
+            </section>
+
+            <section class="card">
+                <h2>Gerenciar Comandas</h2>
+                <div class="mobile-comanda-tools">
+                    <div class="form-group">
+                        <label for="buscaComandaMobile">Buscar</label>
+                        <input type="text" id="buscaComandaMobile" placeholder="Mesa, cliente, responsável">
+                    </div>
+                    <div class="status-chips" id="statusChipsComandasMobile">
+                        <button type="button" class="status-chip active" data-mobile-status="aberta">Abertas</button>
+                        <button type="button" class="status-chip" data-mobile-status="fechada">Fechadas</button>
+                        <button type="button" class="status-chip" data-mobile-status="todos">Todas</button>
+                    </div>
+                    <p id="resumoComandasMobile" class="hint">Carregando comandas...</p>
+                </div>
+                <div id="listaComandasMobile" class="lista-grid">
+                    <p class="empty">Nenhuma comanda encontrada.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="branding.js?v=20260417-mobile-logo"></script>
+    <script src="api.js"></script>
+    <script src="toast.js"></script>
+    <script src="storage.js?v=20260828a"></script>
+    <script src="comanda-module.js?v=20260505-acentos"></script>
+    <script src="menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="mobile-navbar.js?v=20260505-mobile-ajustes"></script>
+    <script src="pwa-register.js?v=20260505-swfix"></script>
+    <script src="index-mobile.js?v=20260505-mobile-ajustes"></script>
+</body>
+</html>
+
+
+
+
+
+
