@@ -24,10 +24,12 @@ function aplicarCoresDaEmpresa(empresa) {
     if (!empresa) return;
     const root = document.documentElement;
     if (empresa.cor_primaria) {
+        root.style.setProperty('--c-primary', empresa.cor_primaria);
         root.style.setProperty('--c-red', empresa.cor_primaria);
         root.style.setProperty('--c-red-dark', empresa.cor_primaria);
     }
     if (empresa.cor_secundaria) {
+        root.style.setProperty('--c-secondary', empresa.cor_secundaria);
         root.style.setProperty('--c-orange', empresa.cor_secundaria);
     }
 }
