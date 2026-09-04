@@ -73,7 +73,7 @@ const SSO_SHARED_SECRET = 'CoOnline-SSO-6f2a9c1d4e8b7053-troque-em-producao';
 // Nome do banco de origem (estrutura de referencia) e credenciais para criar bancos de clientes.
 const TENANTS_DB_SOURCE = 'comanda_online';
 // Pastas/arquivos do sistema legado que NAO devem ser copiados para as instancias dos clientes.
-const TENANTS_EXCLUDE = ['admin', 'saas-app', 'backups', 'logs', '.git', 'node_modules', 'vendor', 'db_runtime_config.php', '.env'];
+const TENANTS_EXCLUDE = ['admin', 'clientes', 'saas-app', 'backups', 'logs', '.git', 'node_modules', 'vendor', 'db_runtime_config.php', '.env'];
 
 /**
  * Divide um dump SQL em statements individuais, respeitando ponto-e-virgula dentro de strings.
