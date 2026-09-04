@@ -5,6 +5,11 @@ AddType application/manifest+json .webmanifest
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
+# Force HTTPS for all public requests, including the administrative login.
+RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)$ [NC]
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=302]
+
 # Esta pasta e a copia "mestre" (sem db_runtime_config.php proprio) usada como
 # template do provisionamento e como dominio do painel admin. Toda instancia
 # real de cliente tem seu proprio db_runtime_config.php (gerado no provisionamento)
