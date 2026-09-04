@@ -44,7 +44,7 @@ jobs:
           port: ${{ secrets.FTP_PORT }}
           protocol: ftp
           local-dir: ./
-          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          server-dir: /saascomanda.gt.tc/htdocs/
           exclude: |
             **/.git*/**
             **/.github/**
