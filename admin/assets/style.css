@@ -122,6 +122,8 @@ th { color: #6b7280; font-weight: 600; font-size: 0.8rem; text-transform: upperc
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .login-box {
@@ -131,6 +133,35 @@ th { color: #6b7280; font-weight: 600; font-size: 0.8rem; text-transform: upperc
     box-shadow: 0 1px 6px rgba(0,0,0,0.12);
     width: 100%;
     max-width: 360px;
+}
+
+.admin-login-box { position: relative; z-index: 1; }
+
+.admin-login-robot-rain {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.admin-login-robot {
+    position: absolute;
+    top: -120px;
+    width: var(--robot-size, 56px);
+    height: auto;
+    opacity: var(--robot-opacity, 0.3);
+    animation: admin-login-robot-fall var(--robot-duration, 12s) linear var(--robot-delay, 0s) infinite;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.2));
+}
+
+@keyframes admin-login-robot-fall {
+    from { transform: translateY(-140px) rotate(var(--robot-rotation, 0deg)); }
+    to { transform: translateY(calc(100vh + 220px)) rotate(calc(var(--robot-rotation, 0deg) + 26deg)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .admin-login-robot-rain { display: none; }
 }
 
 .checkbox-lista { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.4rem; }
