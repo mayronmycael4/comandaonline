@@ -10,6 +10,9 @@ $flash = flash_get();
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($tituloPagina ?? 'Painel Comanda Online') ?></title>
 <link rel="stylesheet" href="assets/style.css">
+<link rel="stylesheet" href="../ui-theme.css?v=20260909">
+<link rel="stylesheet" href="../ui-shell.css?v=20260909">
+<script defer src="../ui-shell.js?v=20260909"></script>
 </head>
 <body>
 <div class="topbar">
