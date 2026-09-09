@@ -1,6 +1,13 @@
-const CACHE_NAME = 'comanda-online-v30';
+const CACHE_NAME = 'comanda-online-ui-20260909';
 
 const APP_SHELL = [
+    'ui-theme.css',
+    'ui-login.css',
+    'ui-login.js',
+    'ui-shell.css',
+    'ui-shell.js',
+    'assets/ui/geist-regular.ttf',
+    'assets/ui/geist-semibold.ttf',
     './',
     'index.html',
     'index-mobile.html',

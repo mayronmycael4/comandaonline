@@ -6,6 +6,8 @@ function iconFor(href){if(/index/.test(href))return 'dashboard';if(/funcionarios
 const aliases={'index-mobile.html':'index.html','pedidos-mobile.html':'comandas.html','comanda.html':'comandas.html','cozinha-mobile.html':'cozinha.html','produtos-mobile.html':'produtos.html','estoque-mobile.html':'estoque.html','relatorios-mobile.html':'relatorios.html','funcionarios-mobile.html':'funcionarios.html','perfil-mobile.html':'perfil.html','empresa_form.php':'empresas.php','plano_form.php':'planos.php'};
 function init(){
  if(document.querySelector('.ui-sidebar')||document.querySelector('.login-box'))return;
+ let saved;try{saved=localStorage.getItem('espetaria_theme');}catch(e){}if(!document.documentElement.dataset.theme)document.documentElement.dataset.theme=saved||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+ document.querySelectorAll('table').forEach(table=>{if(table.parentElement.classList.contains('ui-table-scroll'))return;const wrap=document.createElement('div');wrap.className='ui-table-scroll';wrap.tabIndex=0;wrap.setAttribute('role','region');wrap.setAttribute('aria-label','Tabela com rolagem horizontal');table.before(wrap);wrap.append(table);});
  const current=location.pathname.split('/').pop()||'index.html';
  if(['menu-mobile.html','setup.html'].includes(current))return;
  const admin=document.querySelector('.topbar');
@@ -49,6 +51,9 @@ function init(){
  const top=document.createElement('div');top.className='ui-topbar';top.append(toggle);
  const title=document.createElement('div');title.className='ui-page-context';const heading=document.querySelector('.container h1,.container h2,main h1');title.textContent=heading?.textContent.trim()||document.title.replace('Comanda Online - ','');top.append(title);
  const theme=document.querySelector('.theme-toggle-btn');if(theme){theme.classList.add('ui-icon-button');top.append(theme);}else{const t=document.createElement('button');t.type='button';t.className='ui-icon-button ui-theme-toggle';t.textContent='◐';t.setAttribute('aria-label','Alternar tema');t.onclick=()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;try{localStorage.setItem('espetaria_theme',next);}catch(e){}};top.append(t);}
+ const controls=document.createElement('div');controls.className='ui-header-actions';
+ if(!admin)originalHeader?.querySelectorAll('button,a').forEach(control=>{if(!control.closest('nav,.brand-block')&&!control.matches('.menu-toggle,.theme-toggle-btn'))controls.append(control);});
+ if(controls.childElementCount)top.append(controls);
  const overlay=document.createElement('div');overlay.className='ui-sidebar-overlay';overlay.hidden=true;
  document.body.prepend(sidebar,top,overlay);
  const small=matchMedia('(max-width: 768px)');let collapsed=false,opened=false;try{collapsed=localStorage.getItem('comanda_sidebar_collapsed')==='1';}catch(e){}
