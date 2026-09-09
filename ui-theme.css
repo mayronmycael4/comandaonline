@@ -1,0 +1,11 @@
+/* Tokens from Controle Financeiro 9fa2dd7. Shared by PHP and static pages. */
+@font-face{font-family:Geist;src:url('assets/ui/geist-regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:Geist;src:url('assets/ui/geist-semibold.ttf') format('truetype');font-weight:500 900;font-display:swap}
+:root{--ui-radius:.65rem;--ui-bg:#fff;--ui-fg:#171717;--ui-card:#fff;--ui-primary:#262626;--ui-on-primary:#fafafa;--ui-muted:#f5f5f5;--ui-subtle:#737373;--ui-border:#e5e5e5;--ui-sidebar:#fafafa;--ui-danger:#ba292e;--ui-ring:#a3a3a3;--ui-width:16rem}
+:root[data-theme=dark]{--ui-bg:#171717;--ui-fg:#fafafa;--ui-card:#262626;--ui-primary:#e5e5e5;--ui-on-primary:#262626;--ui-muted:#404040;--ui-subtle:#a3a3a3;--ui-border:#ffffff1a;--ui-sidebar:#262626;--ui-danger:#ff6467;--ui-ring:#737373;color-scheme:dark}
+@supports(color:oklch(1 0 0)){:root{--ui-bg:oklch(1 0 0);--ui-fg:oklch(.145 0 0);--ui-primary:oklch(.205 0 0);--ui-on-primary:oklch(.985 0 0);--ui-muted:oklch(.97 0 0);--ui-subtle:oklch(.556 0 0);--ui-border:oklch(.922 0 0);--ui-sidebar:oklch(.985 0 0)}:root[data-theme=dark]{--ui-bg:oklch(.145 0 0);--ui-fg:oklch(.985 0 0);--ui-card:oklch(.205 0 0);--ui-primary:oklch(.922 0 0);--ui-on-primary:oklch(.205 0 0);--ui-muted:oklch(.269 0 0);--ui-subtle:oklch(.708 0 0);--ui-border:oklch(1 0 0 / 10%);--ui-sidebar:oklch(.205 0 0)}}
+.ui-icon{width:20px;height:20px;flex-shrink:0;display:inline-block;vertical-align:middle}
+.ui-icon-button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;padding:8px;border:1px solid var(--ui-border);border-radius:8px;background:var(--ui-bg);color:var(--ui-fg);cursor:pointer}
+.ui-icon-button:hover{background:var(--ui-muted)}
+:where(.ui-login,.ui-shell) :focus-visible{outline:3px solid var(--ui-ring);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.ui-shell *,.ui-login *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}

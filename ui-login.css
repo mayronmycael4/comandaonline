@@ -1,0 +1,31 @@
+body.ui-login{margin:0!important;padding:0!important;min-height:100svh;overflow:auto!important;background:var(--ui-bg)!important;color:var(--ui-fg)!important;font-family:Geist,Arial,Helvetica,sans-serif!important;font-size:14px}
+.ui-login .login-fire-bg,.ui-login .login-robots,.ui-login .login-robot,.ui-login .login-brand,.ui-login>.theme-toggle-btn{display:none!important}
+.ui-login-layout{display:grid;min-height:100svh;grid-template-columns:1fr}
+.ui-login-panel{display:flex;flex-direction:column;padding:24px;gap:16px;min-width:0}
+.ui-login-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ui-login-brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:16px}
+.ui-brand-mark{width:32px;height:32px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;background:var(--ui-primary);color:var(--ui-on-primary);font-size:12px;flex-shrink:0}
+.ui-login .login-container,.ui-login-panel>.login-page{display:flex;flex:1;align-items:center;justify-content:center;min-height:0!important;padding:32px 0!important;background:none!important;width:100%;margin:0}
+.ui-login .login-box{background:var(--ui-card)!important;color:var(--ui-fg)!important;border:1px solid var(--ui-border)!important;border-radius:var(--ui-radius)!important;box-shadow:0 1px 3px #0000000d!important;padding:24px!important;width:100%!important;max-width:384px!important;margin:0!important;backdrop-filter:none}
+.ui-login .login-box h1{font-size:24px!important;font-weight:600!important;text-align:left!important;color:var(--ui-fg)!important;letter-spacing:-.5px!important;line-height:1.3;margin:0 0 8px!important}
+.ui-login .login-box .subtitle{font-size:14px;text-align:left!important;color:var(--ui-subtle)!important;line-height:1.5;margin:0 0 24px!important}
+.ui-login .form-group,.ui-login .form-field{margin:0 0 16px!important}
+.ui-login .login-box label{display:block;font-size:14px;font-weight:500;color:var(--ui-fg)!important;margin-bottom:8px!important}
+.ui-login .login-box input{font-family:inherit;box-sizing:border-box;width:100%;min-height:38px;padding:8px 12px!important;border:1px solid var(--ui-border)!important;border-radius:8px!important;color:var(--ui-fg)!important;background:var(--ui-bg)!important;font-size:14px;box-shadow:0 1px 2px #0000000d}
+.ui-login .login-box input:focus{outline:3px solid var(--ui-ring)!important;outline-offset:1px}
+.ui-login .login-box button[type=submit]{font-family:inherit;width:100%;min-height:38px;padding:8px 12px!important;border:0!important;border-radius:8px!important;font-size:14px;font-weight:500;background:var(--ui-primary)!important;color:var(--ui-on-primary)!important;box-shadow:none!important;text-transform:none!important;cursor:pointer}
+.ui-login .login-box button[type=submit]:hover{opacity:.85;transform:none!important}
+.ui-login .empresa-info{background:var(--ui-muted)!important;border:1px solid var(--ui-border)!important;color:var(--ui-fg)!important;padding:12px!important;border-radius:8px;margin-bottom:16px}
+.ui-login .empresa-info h2,.ui-login .empresa-info p{color:inherit!important;font-size:14px!important;margin:0!important;text-align:left!important}
+.ui-login .system-sync-notice{font-size:12px;color:var(--ui-subtle)!important;background:var(--ui-muted)!important;border-color:var(--ui-border)!important}
+.ui-login-hero{display:none;background:var(--ui-primary);color:var(--ui-on-primary);padding:48px;flex-direction:column;justify-content:center;gap:24px}
+.ui-login-hero>.ui-icon{width:48px;height:48px;opacity:.9}
+.ui-login-hero h2{font-size:30px;font-weight:600;line-height:1.25;color:inherit;margin:0;max-width:440px}
+.ui-login-hero p{font-size:16px;line-height:1.6;max-width:448px;opacity:.7;margin:0}
+.ui-login-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding-top:16px}
+.ui-login-stats>div{background:color-mix(in srgb,var(--ui-on-primary) 10%,transparent);border-radius:8px;padding:16px}
+.ui-login-stats strong{display:block;font-size:18px;font-weight:600}.ui-login-stats span{font-size:12px;opacity:.65}
+.ui-login-note{font-size:12px;color:var(--ui-subtle);text-align:center;margin:16px 0 0}
+@media(min-width:768px){.ui-login-panel{padding:40px}}
+@media(min-width:1024px){.ui-login-layout{grid-template-columns:1fr 1fr}.ui-login-hero{display:flex}}
+@media(max-width:639px){.ui-login .login-box{border:0!important;box-shadow:none!important;padding:16px 0!important}.ui-login .login-box input{font-size:16px}.ui-login .login-box button[type=submit]{min-height:44px}}
