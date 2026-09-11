@@ -18,3 +18,10 @@
 4. Produtos, nova comanda, KDS, caixa, QR e perfil.
 5. PDV e relatório compartilhado.
 6. Estados de interface e checklist final de QA, incluindo mobile pendente.
+
+## Etapa 2 — Menu de usuario
+
+- Um unico acionador com avatar e nome no rodape, com Perfil, Tema (claro/escuro/sistema) e Sair. Dropdown fecha por Escape e clique externo; funciona com sidebar recolhida.
+- Testado no navegador no painel e na aplicacao cliente: menu unico, temas, perfil administrativo, Escape, modo recolhido e logout do cliente aprovados. Sessao superadmin permaneceu disponivel apos sair do cliente.
+- Perfil administrativo passa a ter rota propria de consulta; edicao e senha pertencem a etapa 4.
+- Referencias de assets e cache PWA versionados para evitar carregar o menu antigo. O commit inclui as integracoes de sidebar ja presentes nos HTMLs alterados, sem refazer telas nem mudar seus formularios.

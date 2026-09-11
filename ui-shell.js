@@ -41,25 +41,38 @@ function init(){
  }
  sidebar.append(nav);
  const footer=document.createElement('div');footer.className='ui-sidebar-footer';
- const user=document.createElement('div');user.className='ui-sidebar-user';user.textContent=admin?(admin.querySelector('div:last-child span')?.textContent.trim()||'Administrador'):(session.nome||'Minha conta');footer.append(user);
- const existingUser=originalHeader?.querySelector('.user-info');if(existingUser)footer.append(existingUser);
- const logout=admin?admin.querySelector('a[href*="logout"]'):document.querySelector('header .btn-logout, header .quick-logout');
- if(logout){logout.classList.add('ui-logout');footer.append(logout);}
- else if(!existingUser){const logoutProxy=document.querySelector('.js-logout-btn');if(logoutProxy)footer.append(logoutProxy);}
+ const userName=admin?(admin.querySelector('div:last-child span')?.textContent.trim()||'Administrador'):(session.nome||'Minha conta');
+ const user=document.createElement('button');user.type='button';user.className='ui-account-trigger';user.setAttribute('aria-expanded','false');user.setAttribute('aria-controls','ui-account-menu');user.title=userName;
+ const avatar=document.createElement('span');avatar.className='ui-account-avatar';avatar.setAttribute('aria-hidden','true');avatar.textContent=userName.split(/\s+/).filter(Boolean).map(p=>p[0]).slice(0,2).join('').toUpperCase();
+ const userLabel=document.createElement('span');userLabel.className='ui-account-name';userLabel.textContent=userName;user.append(avatar,userLabel);footer.append(user);
+ const account=document.createElement('div');account.id='ui-account-menu';account.className='ui-account-menu';account.hidden=true;
+ const profile=document.createElement('a');profile.href=admin?'perfil.php':'perfil.html';profile.textContent='Perfil';account.append(profile);
+ const themeLabel=document.createElement('label');themeLabel.htmlFor='ui-account-theme';themeLabel.textContent='Tema';
+ const themeSelect=document.createElement('select');themeSelect.id='ui-account-theme';
+ for(const [value,label] of [['light','Claro'],['dark','Escuro'],['system','Sistema']]){const option=document.createElement('option');option.value=value;option.textContent=label;themeSelect.append(option);}
+ const systemTheme=matchMedia('(prefers-color-scheme: dark)');
+ function syncTheme(){let preference;try{preference=localStorage.getItem('espetaria_theme');}catch(e){}themeSelect.value=['light','dark'].includes(preference)?preference:'system';document.documentElement.dataset.theme=themeSelect.value==='system'?(systemTheme.matches?'dark':'light'):themeSelect.value;}
+ themeSelect.onchange=()=>{try{if(themeSelect.value==='system')localStorage.removeItem('espetaria_theme');else localStorage.setItem('espetaria_theme',themeSelect.value);}catch(e){}syncTheme();};systemTheme.addEventListener('change',syncTheme);window.addEventListener('storage',syncTheme);syncTheme();account.append(themeLabel,themeSelect);
+ const logout=admin?admin.querySelector('a[href*="logout"]'):document.querySelector('header .btn-logout, header .quick-logout, .js-logout-btn');
+ const exitButton=document.createElement('button');exitButton.type='button';exitButton.textContent='Sair';exitButton.onclick=()=>{if(logout)logout.click();else{Storage.clearSession();location.href='login.html';}};account.append(exitButton);footer.append(account);
+ function closeAccount(){account.hidden=true;user.setAttribute('aria-expanded','false');}
+ user.onclick=()=>{account.hidden=!account.hidden;user.setAttribute('aria-expanded',String(!account.hidden));if(!account.hidden){syncTheme();profile.focus();}};
+ document.addEventListener('click',e=>{if(!footer.contains(e.target))closeAccount();});
+ footer.addEventListener('keydown',e=>{if(e.key==='Escape'&&!account.hidden){e.preventDefault();e.stopPropagation();closeAccount();user.focus();}});
  sidebar.append(footer);
  const toggle=document.createElement('button');toggle.type='button';toggle.className='ui-icon-button ui-sidebar-toggle';toggle.setAttribute('aria-controls','ui-sidebar');toggle.innerHTML=icon('panel');
  const top=document.createElement('div');top.className='ui-topbar';top.append(toggle);
- const title=document.createElement('div');title.className='ui-page-context';const heading=document.querySelector('.container h1,.container h2,main h1');title.textContent=heading?.textContent.trim()||document.title.replace('Comanda Online - ','');top.append(title);
- const theme=document.querySelector('.theme-toggle-btn');if(theme){theme.classList.add('ui-icon-button');top.append(theme);}else{const t=document.createElement('button');t.type='button';t.className='ui-icon-button ui-theme-toggle';t.textContent='◐';t.setAttribute('aria-label','Alternar tema');t.onclick=()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;try{localStorage.setItem('espetaria_theme',next);}catch(e){}};top.append(t);}
+ const title=document.createElement('div');title.className='ui-page-context';const heading=document.querySelector('.container h1,.container h2,main h1');title.textContent=document.title.replace('Comanda Online - ','').replace(' - Comanda Online','');top.append(title);
+ document.querySelectorAll('.theme-toggle-btn').forEach(button=>button.hidden=true);
  const controls=document.createElement('div');controls.className='ui-header-actions';
- if(!admin)originalHeader?.querySelectorAll('button,a').forEach(control=>{if(!control.closest('nav,.brand-block')&&!control.matches('.menu-toggle,.theme-toggle-btn'))controls.append(control);});
+ if(!admin)originalHeader?.querySelectorAll('button,a').forEach(control=>{if(!control.closest('nav,.brand-block,.user-info')&&!control.matches('.menu-toggle,.theme-toggle-btn,.btn-logout,.quick-logout,.js-logout-btn'))controls.append(control);});
  if(controls.childElementCount)top.append(controls);
  const overlay=document.createElement('div');overlay.className='ui-sidebar-overlay';overlay.hidden=true;
  document.body.prepend(sidebar,top,overlay);
  const small=matchMedia('(max-width: 768px)');let collapsed=false,opened=false;try{collapsed=localStorage.getItem('comanda_sidebar_collapsed')==='1';}catch(e){}
  let hiddenSiblings=[];
  function render(){document.body.classList.toggle('ui-sidebar-collapsed',collapsed&&!small.matches);document.body.classList.toggle('ui-sidebar-open',opened&&small.matches);sidebar.inert=small.matches&&!opened;overlay.hidden=!(opened&&small.matches);toggle.setAttribute('aria-expanded',String(small.matches?opened:!collapsed));toggle.setAttribute('aria-label',small.matches?(opened?'Fechar menu':'Abrir menu'):(collapsed?'Expandir menu lateral':'Recolher menu lateral'));}
- function open(value){opened=value;if(small.matches){hiddenSiblings.forEach(([node,was])=>node.inert=was);hiddenSiblings=[];if(value){for(const node of document.body.children){if(node!==sidebar&&node!==overlay&&node!==top&&node instanceof HTMLElement){hiddenSiblings.push([node,node.inert]);node.inert=true;}}}}render();if(value&&small.matches)(nav.querySelector('[aria-current]')||nav.querySelector('a'))?.focus();else toggle.focus();}
+ function open(value){opened=value;if(small.matches){hiddenSiblings.forEach(([node,was])=>node.inert=was);hiddenSiblings=[];if(value){for(const node of document.body.children){if(node!==sidebar&&node!==overlay&&node!==top&&node instanceof HTMLElement){hiddenSiblings.push([node,node.inert]);node.inert=true;}}}}render();if(value&&small.matches)requestAnimationFrame(()=>{if(opened)(nav.querySelector('[aria-current]')||nav.querySelector('a'))?.focus();});else toggle.focus();}
  toggle.onclick=()=>{if(small.matches)open(!opened);else{collapsed=!collapsed;try{localStorage.setItem('comanda_sidebar_collapsed',collapsed?'1':'0');}catch(e){}render();}};
  overlay.onclick=()=>open(false);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&opened){e.preventDefault();open(false);}if((e.ctrlKey||e.metaKey)&&e.key==='b'&&!/input|textarea|select/i.test(e.target.tagName)){e.preventDefault();toggle.click();}if(e.key==='Tab'&&opened&&small.matches){const focusables=[toggle,...Array.from(sidebar.querySelectorAll('a,button,input')).filter(n=>n.getClientRects().length&&!n.disabled)];const first=focusables[0],last=focusables[focusables.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
@@ -70,5 +83,5 @@ function init(){
  if(typeof window.fecharMenu==='function')window.fecharMenu=()=>open(false);
  render();
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+if(document.readyState!=='complete')document.addEventListener('DOMContentLoaded',()=>queueMicrotask(init),{once:true});else init();
 })();

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'comanda-online-ui-20260909';
+const CACHE_NAME = 'comanda-online-ui-20260911r1';
 
 const APP_SHELL = [
     'ui-theme.css',
