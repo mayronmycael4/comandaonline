@@ -34,3 +34,8 @@
 - Retificacao da etapa 2: a permanencia da sessao superadmin havia sido inferida de uma aba ja carregada; em navegacao posterior foi necessario autenticar novamente. O fluxo entrar/voltar foi validado, mas isolamento apos logout deve ser rechecado na etapa 6.
 - `git diff --check` geral encontra marcadores de conflito preexistentes em README.md (linhas 1, 185, 187). Nao resolvidos nesta etapa de sidebar.
 - Proxima etapa: 4 (Produtos, Nova Comanda, Cozinha, Caixa, QR e Perfil), depois 5 (PDV) e 6 (QA final).
+
+## Ajuste — Botao VOLTAR
+- Retorno ao painel movido para o cabecalho compartilhado, condicionado ao contexto SSO e URL administrativa da mesma origem. Corrige telas como Mesas que nao carregam branding.js.
+- Aplicado tambem na instancia QA ID 9. Validado no navegador: Mesas -> VOLTAR -> cadastro da empresa ID 9, mantendo autenticacao superadmin.
+

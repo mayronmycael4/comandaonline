@@ -77,6 +77,15 @@ function init(){
  const toggle=document.createElement('button');toggle.type='button';toggle.className='ui-icon-button ui-sidebar-toggle';toggle.setAttribute('aria-controls','ui-sidebar');toggle.innerHTML=icon('panel');
  const top=document.createElement('div');top.className='ui-topbar';top.append(toggle);
  const title=document.createElement('div');title.className='ui-page-context';const heading=document.querySelector('.container h1,.container h2,main h1');title.textContent=document.title.replace('Comanda Online - ','').replace(' - Comanda Online','');top.append(title);
+ // O retorno pertence ao shell: algumas telas nao carregam branding.js.
+ if(!admin){
+ let returnUrl;try{const savedReturn=localStorage.getItem('comanda_admin_panel_url');if(savedReturn)returnUrl=new URL(savedReturn,location.href);}catch(e){}
+ if(returnUrl&&returnUrl.origin===location.origin&&/\/admin\/(?:index|empresa_form)\.php$/.test(returnUrl.pathname)){
+ const back=document.createElement('a');back.className='ui-admin-return';back.href=returnUrl.href;back.textContent='VOLTAR';back.title='Voltar para o painel administrativo';back.setAttribute('aria-label','Voltar para o painel administrativo');
+ back.addEventListener('click',()=>{try{localStorage.removeItem('comanda_admin_panel_url');}catch(e){}});top.append(back);
+ document.querySelectorAll('.voltar-painel-admin-btn').forEach(link=>link.remove());
+ }
+ }
  document.querySelectorAll('.theme-toggle-btn').forEach(button=>button.hidden=true);
  const controls=document.createElement('div');controls.className='ui-header-actions';
  if(!admin)originalHeader?.querySelectorAll('button,a').forEach(control=>{if(!control.closest('nav,.brand-block,.user-info')&&!control.matches('.menu-toggle,.theme-toggle-btn,.btn-logout,.quick-logout,.js-logout-btn'))controls.append(control);});
