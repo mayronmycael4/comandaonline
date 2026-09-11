@@ -22,15 +22,17 @@ switch ($method) {
     case 'POST':
         $data = getJsonInput();
         $setor = trim((string)($data['setor'] ?? 'cozinha'));
-        if ($setor === '') $setor = 'cozinha';
+        $setor = (string)($data['setor_producao'] ?? $setor);
+        if (!in_array($setor, ['cozinha','churrasqueira','bar','entrega_imediata'], true)) jsonResponse(['error'=>'Setor de producao invalido.'],400);
+        $requerPreparo = isset($data['requer_preparo']) ? (int)(bool)$data['requer_preparo'] : (int)($setor !== 'entrega_imediata');
         
-        $stmt = $pdo->prepare("INSERT INTO produtos (nome, categoria, preco, descricao, setor) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO produtos (nome, categoria, preco, descricao, setor, setor_producao, requer_preparo) VALUES (?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
             $data['nome'],
             $data['categoria'],
             $data['preco'],
             $data['descricao'] ?? null,
-            $setor
+            $setor, $setor, $requerPreparo
         ]);
         
         jsonResponse(['success' => true, 'id' => $pdo->lastInsertId()]);
@@ -40,15 +42,17 @@ switch ($method) {
         $data = getJsonInput();
         $id = $data['id'] ?? 0;
         $setor = trim((string)($data['setor'] ?? 'cozinha'));
-        if ($setor === '') $setor = 'cozinha';
+        $setor = (string)($data['setor_producao'] ?? $setor);
+        if (!in_array($setor, ['cozinha','churrasqueira','bar','entrega_imediata'], true)) jsonResponse(['error'=>'Setor de producao invalido.'],400);
+        $requerPreparo = isset($data['requer_preparo']) ? (int)(bool)$data['requer_preparo'] : (int)($setor !== 'entrega_imediata');
         
-        $stmt = $pdo->prepare("UPDATE produtos SET nome = ?, categoria = ?, preco = ?, descricao = ?, setor = ? WHERE id = ?");
+        $stmt = $pdo->prepare("UPDATE produtos SET nome = ?, categoria = ?, preco = ?, descricao = ?, setor = ?, setor_producao = ?, requer_preparo = ? WHERE id = ?");
         $stmt->execute([
             $data['nome'],
             $data['categoria'],
             $data['preco'],
             $data['descricao'] ?? null,
-            $setor,
+            $setor, $setor, $requerPreparo,
             $id
         ]);
         

@@ -679,6 +679,23 @@ function applySchemaMigrations(PDO $pdo): void {
         ]
     ];
 
+    $migrations[] = [
+        'version' => '2026.09.11.production_routing.v2',
+        'description' => 'Roteamento de producao e data de envio dos itens',
+        'apply' => function (PDO $db): void {
+            if (!hasColumn($db, 'produtos', 'requer_preparo')) $db->exec('ALTER TABLE produtos ADD requer_preparo TINYINT(1) NOT NULL DEFAULT 1');
+            if (!hasColumn($db, 'produtos', 'setor_producao')) {
+                $db->exec("ALTER TABLE produtos ADD setor_producao VARCHAR(40) NOT NULL DEFAULT 'cozinha'");
+                $db->exec("UPDATE produtos SET setor_producao=CASE WHEN setor IN ('cozinha','churrasqueira','bar','entrega_imediata') THEN setor ELSE 'cozinha' END");
+            }
+            if (!hasColumn($db, 'comanda_itens', 'enviado_cozinha_em')) {
+                $db->exec('ALTER TABLE comanda_itens ADD enviado_cozinha_em TIMESTAMP NULL DEFAULT NULL');
+                $db->exec("UPDATE comanda_itens SET enviado_cozinha_em=COALESCE(enviado_producao_at,created_at) WHERE kitchen_setor<>'entrega_imediata'");
+            }
+            if (!hasColumn($db, 'comanda_itens', 'adicionais')) $db->exec('ALTER TABLE comanda_itens ADD adicionais TEXT NULL');
+        }
+    ];
+
     foreach ($migrations as $migration) {
         $version = (string)$migration['version'];
         $description = (string)$migration['description'];

@@ -510,7 +510,7 @@ async function adicionarItem() {
     }
     
     currentComanda.itens.push({
-        id: Date.now(),
+        id: crypto.randomUUID(),
         nome,
         categoria,
         quantidade,
@@ -675,7 +675,22 @@ function getDestinoPosSalvar() {
     return 'index.html';
 }
 
-async function salvarComanda(options = {}) {
+let envioComandaEmAndamento = null;
+function salvarComanda(options = {}) {
+    if (envioComandaEmAndamento) return envioComandaEmAndamento;
+    const button = document.getElementById('btnSalvar');
+    if (button) button.disabled = true;
+    envioComandaEmAndamento = executarSalvarComanda(options).catch(error => {
+        Toast.error(error.message || 'Nao foi possivel salvar a comanda. Tente novamente.');
+        return {error: true};
+    }).finally(() => {
+        envioComandaEmAndamento = null;
+        if (button) button.disabled = false;
+    });
+    return envioComandaEmAndamento;
+}
+
+async function executarSalvarComanda(options = {}) {
     const redirect = options.redirect !== false;
     const showToast = options.showToast !== false;
     const cpfInput = document.getElementById('cpfCliente');
@@ -807,6 +822,7 @@ async function fecharComanda() {
     
     // Salva primeiro
     const saveResult = await salvarComanda({ redirect: false, showToast: false });
+    if (!saveResult || saveResult.error) return;
     if (saveResult && saveResult.pendingSync) {
         Toast.warning('Ainda tentando enviar os dados da comanda. Aguarde sincronizar para fechar.');
         return;

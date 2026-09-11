@@ -199,9 +199,25 @@ function buildItemInsert(
     string $kSetor = 'cozinha',
     ?string $enviadoProducaoAt = null
 ): array {
+    if ($kStatus === 'recebido' && $enviadoProducaoAt === null) {
+        if (!empty($item['produto_id'])) {
+            $productQuery = $pdo->prepare('SELECT requer_preparo, setor_producao FROM produtos WHERE id=?');
+            $productQuery->execute([$item['produto_id']]);
+            $product = $productQuery->fetch();
+            if (!$product) throw new RuntimeException('Produto nao encontrado nesta empresa.');
+            $kSetor = (string)$product['setor_producao'];
+            if (!$product['requer_preparo'] || $kSetor === 'entrega_imediata') {
+                $kSetor = 'entrega_imediata';
+                $kStatus = 'entregue';
+            }
+        }
+        if ($kSetor !== 'entrega_imediata') $enviadoProducaoAt = (string)$pdo->query('SELECT NOW()')->fetchColumn();
+    }
     $cols   = ['comanda_id', 'produto_id', 'nome_item', 'categoria', 'quantidade', 'valor_unitario', 'total'];
     $params = [$comandaId, $item['produto_id'] ?? null, $item['nome'], $item['categoria'] ?? null,
                $item['quantidade'], $item['valor'], $item['quantidade'] * $item['valor']];
+    $cols[] = 'adicionais';
+    $params[] = json_encode($item['adicionais'] ?? [], JSON_UNESCAPED_UNICODE);
 
     if ($hasObs) {
         $cols[]   = 'observacoes';
@@ -221,6 +237,10 @@ function buildItemInsert(
     }
     if ($hasEnviadoProdAt && $enviadoProducaoAt !== null) {
         $cols[] = 'enviado_producao_at';
+        $params[] = $enviadoProducaoAt;
+    }
+    if ($enviadoProducaoAt !== null) {
+        $cols[] = 'enviado_cozinha_em';
         $params[] = $enviadoProducaoAt;
     }
 
@@ -524,7 +544,7 @@ switch ($method) {
                 SELECT id, produto_id, nome_item, categoria, quantidade, valor_unitario,
                        kitchen_status, kitchen_pronto_at, kitchen_setor, enviado_producao_at, observacoes
                 FROM comanda_itens
-                WHERE comanda_id = ? AND nome_item NOT LIKE ?
+                WHERE comanda_id = ? AND nome_item NOT LIKE ? FOR UPDATE
             ");
             $stmt->execute([$id, CANCELADO_PREFIXO . '%']);
             foreach ($stmt->fetchAll() as $row) {
@@ -539,6 +559,23 @@ switch ($method) {
             }
 
             $itensRecebidos = $data['itens'] ?? [];
+            // Compatibilidade com clientes que ainda possuem IDs de regravacoes antigas.
+            $idsOcupados = [];
+            foreach ($itensRecebidos as $item) {
+                if (isset($itensAtivosExistentes[$item['id'] ?? 0])) $idsOcupados[(int)$item['id']] = true;
+            }
+            foreach ($itensRecebidos as &$item) {
+                $item['_cliente_id'] = $item['id'] ?? null;
+                if (isset($itensAtivosExistentes[$item['id'] ?? 0])) continue;
+                foreach ($itensAtivosExistentes as $existingId => $existingItem) {
+                    if (!isset($idsOcupados[$existingId]) && assinaturaItemComparacao($item) === assinaturaItemComparacao($existingItem)) {
+                        $item['id'] = $existingId;
+                        $idsOcupados[$existingId] = true;
+                        break;
+                    }
+                }
+            }
+            unset($item);
             $motivosRemocao = is_array($data['motivos_remocao'] ?? null) ? $data['motivos_remocao'] : [];
 
             $idsMantidos = [];
@@ -594,10 +631,9 @@ switch ($method) {
                 }
             }
 
-            // Regrava somente os itens ativos; os removidos serao regravados como cancelados.
+            // Preserva IDs e timestamps: a cozinha referencia o mesmo item durante todo o fluxo.
             $totalItensAntes = count($itensAtivosExistentes);
-            $stmt = $pdo->prepare("DELETE FROM comanda_itens WHERE comanda_id = ? AND nome_item NOT LIKE ?");
-            $stmt->execute([$id, CANCELADO_PREFIXO . '%']);
+            $idsResposta = [];
 
             // Insere novos itens adaptado às colunas disponíveis
             $total = 0;
@@ -613,37 +649,27 @@ switch ($method) {
                 $kSetor        = (string)($item['setor'] ?? $setorItens[$itemIdCliente] ?? 'cozinha');
                 $kEnviadoAt    = $enviadoProducao[$itemIdCliente] ?? null;
 
+                if (isset($itensAtivosExistentes[$itemIdCliente])) {
+                    if ((float)$item['quantidade'] !== (float)$itensAtivosExistentes[$itemIdCliente]['quantidade']) {
+                        throw new RuntimeException('Para alterar quantidade de um item enviado, cancele o item com motivo e adicione uma nova linha.');
+                    }
+                    $stmt = $pdo->prepare('UPDATE comanda_itens SET nome_item=?, categoria=?, quantidade=?, valor_unitario=?, total=?, observacoes=?, adicionais=COALESCE(?,adicionais) WHERE id=? AND comanda_id=?');
+                    $stmt->execute([$item['nome'], $item['categoria'] ?? null, $item['quantidade'], $item['valor'], $item['quantidade']*$item['valor'], $item['observacoes'] ?? null, isset($item['adicionais']) ? json_encode($item['adicionais'], JSON_UNESCAPED_UNICODE) : null, $itemIdCliente, $id]);
+                    $idsResposta[] = ['cliente_id' => $item['_cliente_id'], 'id' => (int)$itemIdCliente];
+                    continue;
+                }
+
                 [$sql, $params] = buildItemInsert(
                     $pdo, $item, $id,
                     $_hasObservacoes, $_hasKitchenStatus, $_hasKitchenProAt, $_hasKitchenSetor, $_hasEnviadoProdAt,
                     $kStatus, $kProntoAt, $kSetor, $kEnviadoAt
                 );
                 $pdo->prepare($sql)->execute($params);
+                $idsResposta[] = ['cliente_id' => $item['_cliente_id'], 'id' => (int)$pdo->lastInsertId()];
             }
 
             foreach ($itensCancelados as $itemCancelado) {
-                [$sql, $params] = buildItemInsert(
-                    $pdo,
-                    [
-                        'produto_id'  => $itemCancelado['produto_id'],
-                        'nome'        => marcarNomeItemCancelado($itemCancelado['nome_item']),
-                        'categoria'   => $itemCancelado['categoria'],
-                        'quantidade'  => (int) $itemCancelado['quantidade'],
-                        'valor'       => (float) $itemCancelado['valor_unitario'],
-                        'observacoes' => $itemCancelado['observacoes'] ?? null,
-                    ],
-                    $id,
-                    $_hasObservacoes,
-                    $_hasKitchenStatus,
-                    $_hasKitchenProAt,
-                    $_hasKitchenSetor,
-                    $_hasEnviadoProdAt,
-                    'cancelado',
-                    $itemCancelado['kitchen_pronto_at'] ?? null,
-                    (string)($itemCancelado['kitchen_setor'] ?? 'cozinha'),
-                    $itemCancelado['enviado_producao_at'] ?? null
-                );
-                $pdo->prepare($sql)->execute($params);
+                $pdo->prepare("UPDATE comanda_itens SET nome_item=?, kitchen_status='cancelado' WHERE id=? AND comanda_id=?")->execute([marcarNomeItemCancelado($itemCancelado['nome_item']), $itemCancelado['id'], $id]);
             }
 
             $totalItensDepois = count($itensRecebidos);
@@ -697,7 +723,7 @@ switch ($method) {
             ], $actor);
             
             $pdo->commit();
-            jsonResponse(['success' => true, 'total' => $total, 'versao_nova' => $versaoNova]);
+            jsonResponse(['success' => true, 'total' => $total, 'versao_nova' => $versaoNova, 'itens_ids' => $idsResposta]);
             
         } catch (Exception $e) {
             if ($pdo->inTransaction()) {

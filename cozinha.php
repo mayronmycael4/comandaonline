@@ -110,6 +110,8 @@ if ($method === 'GET') {
             ci.categoria,
             ci.quantidade,
             ci.valor_unitario,
+            ci.adicionais,
+            ci.enviado_cozinha_em,
             {$selObservacoes}
             {$selKitchenStatus}
             {$selKitchenProntoAt}
@@ -128,7 +130,7 @@ if ($method === 'GET') {
         JOIN comandas      c  ON c.id  = ci.comanda_id
         LEFT JOIN funcionarios f ON f.id = c.funcionario_id
         LEFT JOIN clientes     cl ON cl.id = c.cliente_id
-        WHERE c.status IN ('aberta', 'cancelada')
+        WHERE (c.status IN ('aberta', 'cancelada') OR ci.kitchen_status IN ('recebido','em_preparo')) AND ci.kitchen_setor <> 'entrega_imediata'
     ";
 
     if ($setorFiltro !== '') {
@@ -211,6 +213,8 @@ if ($method === 'GET') {
             $grupados[$cid]['itens'][] = [
                 'item_id'          => (int) $row['item_id'],
                 'produto_id'       => $row['produto_id'],
+                'adicionais'       => json_decode($row['adicionais'] ?? '[]', true) ?: [],
+                'enviado_cozinha_em' => $row['enviado_cozinha_em'],
                 'nome_item'        => nomeItemSemPrefixoCancelado($row['nome_item']),
                 'categoria'        => $row['categoria'],
                 'quantidade'       => (int) $row['quantidade'],

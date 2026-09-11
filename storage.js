@@ -865,6 +865,7 @@ const Storage = {
                 valor: parseFloat(i.valor_unitario || i.valor),
                 produtoId: i.produto_id,
                 observacoes: i.observacoes || null,
+                adicionais: Array.isArray(i.adicionais) ? i.adicionais : JSON.parse(i.adicionais || '[]'),
                 kitchenStatus: i.kitchen_status || 'pendente',
                 kitchenProntoAt: i.kitchen_pronto_at || null
             }))
@@ -1261,6 +1262,7 @@ const Storage = {
                 quantidade: i.quantidade,
                 valor: parseFloat(i.valor_unitario),
                 observacoes: i.observacoes || null,
+                adicionais: Array.isArray(i.adicionais) ? i.adicionais : JSON.parse(i.adicionais || '[]'),
                 canceladoEm: i.created_at || null
             })),
             itens: (c.itens || []).map(i => ({
@@ -1271,6 +1273,7 @@ const Storage = {
                 valor: parseFloat(i.valor_unitario),
                 produtoId: i.produto_id,
                 observacoes: i.observacoes || null,
+                adicionais: Array.isArray(i.adicionais) ? i.adicionais : JSON.parse(i.adicionais || '[]'),
                 kitchenStatus: i.kitchen_status || 'pendente'
             }))
         };
@@ -1298,7 +1301,8 @@ const Storage = {
                     categoria: i.categoria,
                     quantidade: i.quantidade,
                     valor: i.valor,
-                    observacoes: i.observacoes || null
+                    observacoes: i.observacoes || null,
+                    adicionais: i.adicionais || []
                 }))
             };
 
@@ -1310,6 +1314,12 @@ const Storage = {
 
             try {
                 const result = await API.updateComanda(payload);
+                if (Array.isArray(result?.itens_ids)) {
+                    result.itens_ids.forEach(mapping => {
+                        const item = (comanda.itens || []).find(i => String(i.id) === String(mapping.cliente_id));
+                        if (item) item.id = mapping.id;
+                    });
+                }
                 if (result && result.versao_nova) {
                     comanda.versao = Number(result.versao_nova);
                 }

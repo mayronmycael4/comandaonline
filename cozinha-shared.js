@@ -117,8 +117,12 @@ const CozinhaModule = (() => {
             : `cozinha.php?${_setorFiltro ? `setor=${encodeURIComponent(_setorFiltro)}&` : ''}`;
         const clientBefore = Date.now();
         const resp = await fetch(url, { cache: 'no-store' });
-        if (!resp.ok) throw new Error('Erro ao buscar pedidos da cozinha');
         const data = await resp.json();
+        if (!resp.ok) {
+            const error = new Error(data.message || data.error || 'Erro ao buscar pedidos da cozinha');
+            error.status = resp.status;
+            throw error;
+        }
         const clientAfter = Date.now();
 
         // Se o servidor retornar server_time (Unix ms), calibrar o offset.
@@ -270,6 +274,11 @@ const CozinhaModule = (() => {
     }
 
     // ---- Render helper ----
+    function _renderAdicionais(item) {
+        return (Array.isArray(item.adicionais) ? item.adicionais : []).map(extra =>
+            `<div class="cozinha-item-obs">Adicional: ${_esc(extra.nome || '')}</div>`
+        ).join('');
+    }
     function _renderItem(item, comandaId, numeroMesa) {
         const statusClass = _isProntoOuEntregue(item.kitchen_status)
             ? 'item-pronto'
@@ -293,6 +302,7 @@ const CozinhaModule = (() => {
                 <div class="cozinha-item-info">
                     <div class="cozinha-item-nome">${_esc(item.nome_item)}</div>
                     ${obs}
+                    ${_renderAdicionais(item)}
                 </div>
                 ${acaoItem}
             </li>
@@ -383,6 +393,7 @@ const CozinhaModule = (() => {
                             <span class="cozinha-item-status ${st}">${stLbl}</span>
                         </div>
                         ${obs}
+                        ${_renderAdicionais(item)}
                         ${item.kitchen_status === 'cancelado' ? `
                             <div class="cozinha-card-cancelada" style="margin-top:10px">🚫 Item cancelado. Não preparar.</div>
                         ` : _isPendente(item.kitchen_status) ? `
@@ -616,6 +627,15 @@ const CozinhaModule = (() => {
                 atualizarContador(contadorEl, pedidos);
                 atualizarTimestamp(timestampEl);
             } catch (err) {
+                // Uma falha de acesso/rede nao equivale a uma fila vazia.
+                listContainer.replaceChildren();
+                const message = document.createElement('p');
+                message.className = 'empty';
+                message.setAttribute('role', 'alert');
+                message.textContent = err.message || 'Nao foi possivel consultar a cozinha.';
+                listContainer.appendChild(message);
+                if (contadorEl) contadorEl.textContent = 'Consulta indisponivel';
+                if (timestampEl) timestampEl.textContent = 'Sem confirmacao do servidor';
                 if (onError) onError(err);
             } finally {
                 clearTimeout(_pollTimer);
