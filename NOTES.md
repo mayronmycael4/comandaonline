@@ -25,3 +25,12 @@
 - Testado no navegador no painel e na aplicacao cliente: menu unico, temas, perfil administrativo, Escape, modo recolhido e logout do cliente aprovados. Sessao superadmin permaneceu disponivel apos sair do cliente.
 - Perfil administrativo passa a ter rota propria de consulta; edicao e senha pertencem a etapa 4.
 - Referencias de assets e cache PWA versionados para evitar carregar o menu antigo. O commit inclui as integracoes de sidebar ja presentes nos HTMLs alterados, sem refazer telas nem mudar seus formularios.
+
+## Etapa 3 — Sidebar agrupada
+
+- Operacao, Cadastros, Gestao e Sistema organizados na ordem solicitada, mantendo a filtragem existente de permissoes e os itens anteriores. PDV reservado/desabilitado ate a etapa 5.
+- Grupos recolhiveis com preferencia persistida; grupo da pagina ativa abre automaticamente. Modo somente icones mostra os itens mesmo quando o grupo estava fechado. Testado no navegador.
+- Validacao mobile efetivamente concluida em 390x844: dashboard admin, empresas, planos, cadastro/edicao de empresa e plano, perfil administrativo, sem overflow horizontal. Menu cliente, conta e Escape aprovados no mobile. A pendencia mobile da etapa 1 foi resolvida.
+- Retificacao da etapa 2: a permanencia da sessao superadmin havia sido inferida de uma aba ja carregada; em navegacao posterior foi necessario autenticar novamente. O fluxo entrar/voltar foi validado, mas isolamento apos logout deve ser rechecado na etapa 6.
+- `git diff --check` geral encontra marcadores de conflito preexistentes em README.md (linhas 1, 185, 187). Nao resolvidos nesta etapa de sidebar.
+- Proxima etapa: 4 (Produtos, Nova Comanda, Cozinha, Caixa, QR e Perfil), depois 5 (PDV) e 6 (QA final).

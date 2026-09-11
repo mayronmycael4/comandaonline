@@ -24,6 +24,7 @@ function init(){
  else if(window.MenuGeral){items.push(...MenuGeral.getDesktopItems(session));
  const can=p=>session.isAdmin||Storage.hasPermission(p);
  if(can('comandas'))items.push({href:'nova-comanda-mobile.html',label:'Nova comanda'});
+ if(can('comandas'))items.push({href:'pdv.html',label:'PDV',pending:true});
  if(can('relatorios'))items.push({href:'caixa-mobile.html',label:'Caixa'});
  if(can('comandas')||can('funcionarios'))items.push({href:'qr-mesas.html',label:'QR de Mesas'});
  if(can('SISTEMA_VER_LOGS'))items.push({href:'auditoria.html',label:'Auditoria'},{href:'monitoramento.html',label:'Monitoramento'});
@@ -31,13 +32,26 @@ function init(){
  // Preserve page-specific links already present in the old top navigation.
  document.querySelectorAll('nav.desktop-menu a').forEach(a=>{if(!a.hidden&&a.style.display!=='none')items.push({href:a.getAttribute('href'),label:a.textContent.trim()});});
  const seen=new Set();
- for(const group of ['Menu','Geral']){
- const heading=document.createElement('div');heading.className='ui-nav-group';heading.textContent=group;nav.append(heading);
- items.forEach(item=>{if(!item.href||seen.has(item.href))return;const general=/ajuda|perfil|download|auditoria|monitoramento/.test(item.href);if((group==='Geral')!==general)return;seen.add(item.href);
+ const groups=admin?[{label:'Administração',match:()=>true,order:[]}]:[
+ {label:'OPERAÇÃO',match:h=>/index|nova-comanda|comandas|pdv|cozinha|caixa|mesas/.test(h),order:['index.html','nova-comanda-mobile.html','comandas.html','pdv.html','cozinha.html','caixa-mobile.html','mesas-mapa.html','qr-mesas.html']},
+ {label:'CADASTROS',match:h=>/produtos|estoque|compras|clientes|funcionarios/.test(h),order:['produtos.html','estoque.html','compras.html','clientes.html','funcionarios.html']},
+ {label:'GESTÃO',match:h=>/relatorios|auditoria|monitoramento/.test(h),order:['relatorios.html','auditoria.html','monitoramento.html']},
+ {label:'SISTEMA',match:()=>true,order:['download.html','ajuda.html','perfil.html']}];
+ for(const group of groups){
+ const section=document.createElement('details');section.className='ui-nav-section';section.open=true;
+ const heading=document.createElement('summary');heading.className='ui-nav-group';heading.textContent=group.label;section.append(heading);
+ const links=document.createElement('div');section.append(links);
+ const ordered=items.filter(item=>item.href&&!seen.has(item.href)&&group.match(item.href)).sort((a,b)=>{const rank=h=>{const index=group.order.indexOf(h);return index<0?999:index;};return rank(a.href)-rank(b.href);});
+ ordered.forEach(item=>{if(seen.has(item.href))return;seen.add(item.href);
  const link=document.createElement('a');link.href=item.href;link.title=item.label;link.setAttribute('aria-label',item.label);link.innerHTML=icon(iconFor(item.href));const text=document.createElement('span');text.textContent=item.label;link.append(text);
+ if(item.pending){link.removeAttribute('href');link.setAttribute('aria-disabled','true');link.title='PDV indisponível';}
  if((aliases[current]||current)===(aliases[item.href]||item.href)){link.setAttribute('aria-current','page');link.classList.add('ui-active');}
- nav.append(link);});
- if(!heading.nextElementSibling)heading.remove();
+ links.append(link);});
+ if(!links.childElementCount)continue;
+ try{section.open=localStorage.getItem('comanda_nav_'+group.label)!=='closed';}catch(e){}
+ if(links.querySelector('[aria-current]'))section.open=true;
+ section.addEventListener('toggle',()=>{try{localStorage.setItem('comanda_nav_'+group.label,section.open?'open':'closed');}catch(e){}});
+ nav.append(section);
  }
  sidebar.append(nav);
  const footer=document.createElement('div');footer.className='ui-sidebar-footer';
@@ -75,7 +89,7 @@ function init(){
  function open(value){opened=value;if(small.matches){hiddenSiblings.forEach(([node,was])=>node.inert=was);hiddenSiblings=[];if(value){for(const node of document.body.children){if(node!==sidebar&&node!==overlay&&node!==top&&node instanceof HTMLElement){hiddenSiblings.push([node,node.inert]);node.inert=true;}}}}render();if(value&&small.matches)requestAnimationFrame(()=>{if(opened)(nav.querySelector('[aria-current]')||nav.querySelector('a'))?.focus();});else toggle.focus();}
  toggle.onclick=()=>{if(small.matches)open(!opened);else{collapsed=!collapsed;try{localStorage.setItem('comanda_sidebar_collapsed',collapsed?'1':'0');}catch(e){}render();}};
  overlay.onclick=()=>open(false);
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&opened){e.preventDefault();open(false);}if((e.ctrlKey||e.metaKey)&&e.key==='b'&&!/input|textarea|select/i.test(e.target.tagName)){e.preventDefault();toggle.click();}if(e.key==='Tab'&&opened&&small.matches){const focusables=[toggle,...Array.from(sidebar.querySelectorAll('a,button,input')).filter(n=>n.getClientRects().length&&!n.disabled)];const first=focusables[0],last=focusables[focusables.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&opened){e.preventDefault();open(false);}if((e.ctrlKey||e.metaKey)&&e.key==='b'&&!/input|textarea|select/i.test(e.target.tagName)){e.preventDefault();toggle.click();}if(e.key==='Tab'&&opened&&small.matches){const focusables=[toggle,...Array.from(sidebar.querySelectorAll('a[href],button,input,select,summary')).filter(n=>n.getClientRects().length&&!n.disabled)];const first=focusables[0],last=focusables[focusables.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
  nav.addEventListener('click',e=>{if(e.target.closest('a')&&small.matches)open(false);});
  small.addEventListener('change',()=>{open(false);});
  // Existing swipe and close hooks now open this presentation component.
