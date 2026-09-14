@@ -493,6 +493,23 @@ const Storage = {
     },
 
     // ========== EMPRESA ==========
+    companyTimezone: 'America/Belem',
+    companyClockOffset: 0,
+    companyNow() {
+        return new Date(Date.now() + this.companyClockOffset);
+    },
+    companyDate(value = this.companyNow()) {
+        const parts = new Intl.DateTimeFormat('en-CA', {
+            timeZone: this.companyTimezone, year: 'numeric', month: '2-digit', day: '2-digit'
+        }).formatToParts(new Date(value));
+        const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+        return `${values.year}-${values.month}-${values.day}`;
+    },
+    companyDateTime(value) {
+        return new Intl.DateTimeFormat('pt-BR', {
+            timeZone: this.companyTimezone, dateStyle: 'short', timeStyle: 'medium'
+        }).format(new Date(value));
+    },
     async getEmpresa() {
         if (!this.useMySQL) {
             const data = localStorage.getItem(this.EMPRESA_CACHE_KEY);
@@ -501,6 +518,8 @@ const Storage = {
         try {
             const empresa = await API.getEmpresa();
             if (empresa) {
+                this.companyTimezone = empresa.timezone || 'America/Belem';
+                if (typeof empresa.server_time_ms === 'number') this.companyClockOffset = empresa.server_time_ms - Date.now();
                 localStorage.setItem(this.EMPRESA_CACHE_KEY, JSON.stringify(empresa));
             }
             return empresa;
@@ -1821,7 +1840,7 @@ const Storage = {
             const fim = new Date(data.getFullYear(), data.getMonth(), data.getDate(), 23, 59, 59);
             return this.calcularTotais(await this.getVendasPorPeriodo(inicio, fim));
         }
-        const result = await API.getRelatorio('dia', { data: data.toISOString().split('T')[0] });
+        const result = await API.getRelatorio('dia', { data: this.companyDate(data) });
         return this.normalizarRelatorio(result);
     },
 
@@ -1835,7 +1854,7 @@ const Storage = {
             fim.setHours(23, 59, 59);
             return this.calcularTotais(await this.getVendasPorPeriodo(inicio, fim));
         }
-        const result = await API.getRelatorio('semana', { data: data.toISOString().split('T')[0] });
+        const result = await API.getRelatorio('semana', { data: this.companyDate(data) });
         return this.normalizarRelatorio(result);
     },
 

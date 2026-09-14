@@ -301,12 +301,12 @@ function iniciarAutoRefreshComandasMobile() {
 }
 
 function atualizarStatsMobile() {
-    const hoje = new Date();
+    const hoje = Storage.companyNow();
     const abertas = todasComandasMobile.filter(c => c.status === 'aberta');
     const fechadasHoje = todasComandasMobile.filter(c => {
         if (c.status !== 'fechada') return false;
         const dataFechamento = c.fechamento ? new Date(c.fechamento.data) : new Date(c.createdAt);
-        return dataFechamento.toDateString() === hoje.toDateString();
+        return Storage.companyDate(dataFechamento) === Storage.companyDate(hoje);
     });
 
     const elAbertas = document.getElementById('statComandasAbertasMobile');

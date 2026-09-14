@@ -60,6 +60,7 @@ function exportFullBackup(PDO $pdo): array {
 
     return [
         'version' => 'full-db-backup-v1',
+        'sql_timezone' => $pdo->query('SELECT @@session.time_zone')->fetchColumn(),
         'generated_at' => gmdate('c'),
         'database' => $GLOBALS['dbConfig']['dbname'] ?? null,
         'table_count' => count($tables),
@@ -75,6 +76,8 @@ function restoreFromBackup(PDO $pdo, array $backup): array {
     }
 
     $restored = [];
+    $originalTimezone = $pdo->query('SELECT @@session.time_zone')->fetchColumn();
+    $pdo->exec('SET time_zone=' . $pdo->quote((string)($backup['sql_timezone'] ?? 'SYSTEM')));
 
     try {
         $pdo->beginTransaction();
@@ -136,6 +139,8 @@ function restoreFromBackup(PDO $pdo, array $backup): array {
         } catch (Throwable $_ignore) {
         }
         throw $e;
+    } finally {
+        $pdo->exec('SET time_zone=' . $pdo->quote((string)$originalTimezone));
     }
 }
 

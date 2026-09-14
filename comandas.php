@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once __DIR__ . '/time_contract.php';
 
 const CANCELADO_PREFIXO = '[CANCELADO] ';
 
@@ -256,7 +257,7 @@ switch ($method) {
         if (isset($_GET['id'])) {
             // Busca comanda específica com itens
             $stmt = $pdo->prepare("
-                SELECT c.*, f.nome as funcionario_nome, 
+                SELECT c.*, UNIX_TIMESTAMP(c.created_at) AS __epoch_created_at, UNIX_TIMESTAMP(c.updated_at) AS __epoch_updated_at, UNIX_TIMESTAMP(c.fechamento_data) AS __epoch_fechamento_data, f.nome as funcionario_nome,
                        cl.nome as cliente_nome, cl.cpf as cliente_cpf, cl.contato as cliente_contato
                 FROM comandas c
                 LEFT JOIN funcionarios f ON c.funcionario_id = f.id
@@ -267,11 +268,11 @@ switch ($method) {
             $comanda = $stmt->fetch();
             
             if ($comanda) {
-                $stmt = $pdo->prepare("SELECT * FROM comanda_itens WHERE comanda_id = ? AND nome_item NOT LIKE ?");
+                $stmt = $pdo->prepare("SELECT *, UNIX_TIMESTAMP(created_at) AS __epoch_created_at, UNIX_TIMESTAMP(enviado_cozinha_em) AS __epoch_enviado_cozinha_em, UNIX_TIMESTAMP(kitchen_pronto_at) AS __epoch_kitchen_pronto_at FROM comanda_itens WHERE comanda_id = ? AND nome_item NOT LIKE ?");
                 $stmt->execute([$_GET['id'], CANCELADO_PREFIXO . '%']);
                 $comanda['itens'] = $stmt->fetchAll();
 
-                $stmt = $pdo->prepare("SELECT id, nome_item, categoria, quantidade, valor_unitario, observacoes, created_at FROM comanda_itens WHERE comanda_id = ? AND nome_item LIKE ? ORDER BY created_at DESC, id DESC");
+                $stmt = $pdo->prepare("SELECT id, nome_item, categoria, quantidade, valor_unitario, observacoes, UNIX_TIMESTAMP(created_at) AS __epoch_created_at FROM comanda_itens WHERE comanda_id = ? AND nome_item LIKE ? ORDER BY created_at DESC, id DESC");
                 $stmt->execute([$_GET['id'], CANCELADO_PREFIXO . '%']);
                 $comanda['historico_cancelamentos'] = array_map(function ($item) {
                     $item['nome_item'] = preg_replace('/^' . preg_quote(CANCELADO_PREFIXO, '/') . '/', '', (string)($item['nome_item'] ?? ''));
@@ -286,10 +287,10 @@ switch ($method) {
                 $comanda['status_operacional'] = calcularStatusOperacionalComanda($pdo, $comanda, $_hasKitchenStatus);
             }
             
-            jsonResponse($comanda);
+            jsonResponse(comanda_serialize_epochs($comanda));
         } elseif (isset($_GET['funcionario_id'])) {
             $stmt = $pdo->prepare("
-                SELECT c.*, f.nome as funcionario_nome,
+                SELECT c.*, UNIX_TIMESTAMP(c.created_at) AS __epoch_created_at, UNIX_TIMESTAMP(c.updated_at) AS __epoch_updated_at, UNIX_TIMESTAMP(c.fechamento_data) AS __epoch_fechamento_data, f.nome as funcionario_nome,
                        cl.nome as cliente_nome, cl.cpf as cliente_cpf, cl.contato as cliente_contato
                 FROM comandas c 
                 LEFT JOIN funcionarios f ON c.funcionario_id = f.id
@@ -302,7 +303,7 @@ switch ($method) {
             
             // Busca itens para cada comanda
             foreach ($comandas as &$comanda) {
-                $stmt = $pdo->prepare("SELECT * FROM comanda_itens WHERE comanda_id = ? AND nome_item NOT LIKE ?");
+                $stmt = $pdo->prepare("SELECT *, UNIX_TIMESTAMP(created_at) AS __epoch_created_at, UNIX_TIMESTAMP(enviado_cozinha_em) AS __epoch_enviado_cozinha_em, UNIX_TIMESTAMP(kitchen_pronto_at) AS __epoch_kitchen_pronto_at FROM comanda_itens WHERE comanda_id = ? AND nome_item NOT LIKE ?");
                 $stmt->execute([$comanda['id'], CANCELADO_PREFIXO . '%']);
                 $comanda['itens'] = $stmt->fetchAll();
 
@@ -315,10 +316,10 @@ switch ($method) {
             }
             unset($comanda);
             
-            jsonResponse($comandas);
+            jsonResponse(comanda_serialize_epochs($comandas));
         } else {
             $stmt = $pdo->query("
-                SELECT c.*, f.nome as funcionario_nome, cl.nome as cliente_nome 
+                SELECT c.*, UNIX_TIMESTAMP(c.created_at) AS __epoch_created_at, UNIX_TIMESTAMP(c.updated_at) AS __epoch_updated_at, UNIX_TIMESTAMP(c.fechamento_data) AS __epoch_fechamento_data, f.nome as funcionario_nome, cl.nome as cliente_nome
                 FROM comandas c 
                 LEFT JOIN funcionarios f ON c.funcionario_id = f.id
                 LEFT JOIN clientes cl ON c.cliente_id = cl.id
@@ -328,7 +329,7 @@ switch ($method) {
             
             // Busca itens para cada comanda
             foreach ($comandas as &$comanda) {
-                $stmt = $pdo->prepare("SELECT * FROM comanda_itens WHERE comanda_id = ? AND nome_item NOT LIKE ?");
+                $stmt = $pdo->prepare("SELECT *, UNIX_TIMESTAMP(created_at) AS __epoch_created_at, UNIX_TIMESTAMP(enviado_cozinha_em) AS __epoch_enviado_cozinha_em, UNIX_TIMESTAMP(kitchen_pronto_at) AS __epoch_kitchen_pronto_at FROM comanda_itens WHERE comanda_id = ? AND nome_item NOT LIKE ?");
                 $stmt->execute([$comanda['id'], CANCELADO_PREFIXO . '%']);
                 $comanda['itens'] = $stmt->fetchAll();
 
@@ -341,7 +342,7 @@ switch ($method) {
             }
             unset($comanda);
             
-            jsonResponse($comandas);
+            jsonResponse(comanda_serialize_epochs($comandas));
         }
         break;
         

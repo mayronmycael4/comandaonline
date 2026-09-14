@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require_once __DIR__ . '/db_config_helper.php';
+require_once __DIR__ . '/time_contract.php';
 
 const SYSTEM_VERSION = '2026.05.18-foundation';
 // Segredo compartilhado com o painel administrativo para validar o token de acesso direto (SSO).
@@ -116,6 +117,7 @@ function jsonResponse($data, $status = 200) {
     }
 
     http_response_code($status);
+    if (!empty($GLOBALS['comandaUtcContract'])) $data = comanda_utc_payload($data);
     echo json_encode($data, JSON_UNESCAPED_UNICODE);
     exit;
 }
@@ -294,7 +296,7 @@ function ensureBaseBusinessTables(PDO $pdo): void {
             pontos_fidelidade INT NOT NULL DEFAULT 0,
             total_gasto DECIMAL(12,2) NOT NULL DEFAULT 0,
             total_visitas INT NOT NULL DEFAULT 0,
-            ultima_visita DATETIME NULL,
+            ultima_visita TIMESTAMP NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             UNIQUE KEY uniq_cliente_cpf (cpf)
@@ -330,7 +332,7 @@ function ensureBaseBusinessTables(PDO $pdo): void {
             forma_pagamento VARCHAR(50) NULL,
             observacoes TEXT NULL,
             versao INT NOT NULL DEFAULT 1,
-            fechamento_data DATETIME NULL,
+            fechamento_data TIMESTAMP NULL,
             duracao VARCHAR(20) NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -387,7 +389,7 @@ function ensureBaseBusinessTables(PDO $pdo): void {
             ip_address VARCHAR(45) NULL,
             user_agent TEXT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            expires_at DATETIME NOT NULL,
+            expires_at TIMESTAMP NOT NULL,
             INDEX idx_sessoes_token (token(120)),
             CONSTRAINT fk_sessoes_funcionario FOREIGN KEY (funcionario_id) REFERENCES funcionarios(id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4"
@@ -696,6 +698,16 @@ function applySchemaMigrations(PDO $pdo): void {
         }
     ];
 
+    $migrations[] = [
+        'version' => '2026.09.14.company_timezone.v1',
+        'description' => 'Fuso IANA por empresa, padrao America/Belem',
+        'apply' => function (PDO $db): void {
+            if (!hasColumn($db, 'empresa', 'timezone')) {
+                $db->exec("ALTER TABLE empresa ADD timezone VARCHAR(64) NOT NULL DEFAULT 'America/Belem'");
+            }
+        }
+    ];
+
     foreach ($migrations as $migration) {
         $version = (string)$migration['version'];
         $description = (string)$migration['description'];
@@ -783,7 +795,7 @@ function ensureCoreOperationalTables(PDO $pdo): void {
             mensagem TEXT NOT NULL,
             payload JSON NULL,
             status ENUM('pendente','lida') NOT NULL DEFAULT 'pendente',
-            lida_em DATETIME NULL,
+            lida_em TIMESTAMP NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_notif_func_status (funcionario_id, status, created_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
@@ -865,7 +877,7 @@ function ensureCoreOperationalTables(PDO $pdo): void {
             observacao_abertura VARCHAR(255) NULL,
             observacao_fechamento VARCHAR(255) NULL,
             aberto_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            fechado_em DATETIME NULL,
+            fechado_em TIMESTAMP NULL,
             FOREIGN KEY (operador_id) REFERENCES funcionarios(id),
             INDEX idx_caixa_status_aberto (status, aberto_em),
             INDEX idx_caixa_operador (operador_id, aberto_em)
@@ -906,7 +918,7 @@ function ensureCoreOperationalTables(PDO $pdo): void {
             $pdo->exec("ALTER TABLE funcionarios ADD COLUMN sessao_versao INT NOT NULL DEFAULT 1");
         }
         if (!in_array('sessao_revogada_em', $funcCols, true)) {
-            $pdo->exec("ALTER TABLE funcionarios ADD COLUMN sessao_revogada_em DATETIME NULL DEFAULT NULL");
+            $pdo->exec("ALTER TABLE funcionarios ADD COLUMN sessao_revogada_em TIMESTAMP NULL DEFAULT NULL");
         }
         if (!in_array('role', $funcCols, true)) {
             $pdo->exec("ALTER TABLE funcionarios ADD COLUMN role VARCHAR(30) NOT NULL DEFAULT 'garcom'");
@@ -915,13 +927,13 @@ function ensureCoreOperationalTables(PDO $pdo): void {
             $pdo->exec("ALTER TABLE funcionarios ADD COLUMN nome_exibicao VARCHAR(120) NULL");
         }
         if (!in_array('ultimo_login', $funcCols, true)) {
-            $pdo->exec("ALTER TABLE funcionarios ADD COLUMN ultimo_login DATETIME NULL DEFAULT NULL");
+            $pdo->exec("ALTER TABLE funcionarios ADD COLUMN ultimo_login TIMESTAMP NULL DEFAULT NULL");
         }
         if (!in_array('failed_login_attempts', $funcCols, true)) {
             $pdo->exec("ALTER TABLE funcionarios ADD COLUMN failed_login_attempts SMALLINT NOT NULL DEFAULT 0");
         }
         if (!in_array('blocked_until', $funcCols, true)) {
-            $pdo->exec("ALTER TABLE funcionarios ADD COLUMN blocked_until DATETIME NULL DEFAULT NULL");
+            $pdo->exec("ALTER TABLE funcionarios ADD COLUMN blocked_until TIMESTAMP NULL DEFAULT NULL");
         }
         if (!in_array('pin_hash', $funcCols, true)) {
             $pdo->exec("ALTER TABLE funcionarios ADD COLUMN pin_hash VARCHAR(255) NULL DEFAULT NULL");
@@ -958,7 +970,7 @@ function ensureCoreOperationalTables(PDO $pdo): void {
             $pdo->exec("ALTER TABLE comanda_itens ADD COLUMN kitchen_setor VARCHAR(40) NOT NULL DEFAULT 'cozinha'");
         }
         if (!in_array('enviado_producao_at', $itemCols, true)) {
-            $pdo->exec("ALTER TABLE comanda_itens ADD COLUMN enviado_producao_at DATETIME NULL DEFAULT NULL");
+            $pdo->exec("ALTER TABLE comanda_itens ADD COLUMN enviado_producao_at TIMESTAMP NULL DEFAULT NULL");
         }
     } catch (Throwable $e) {
         error_log('[config.php] Falha ao preparar colunas KDS em comanda_itens: ' . $e->getMessage());
@@ -1159,7 +1171,7 @@ function ensureCoreOperationalTables(PDO $pdo): void {
             'fornecedor_nome' => 'ALTER TABLE lista_compras ADD COLUMN fornecedor_nome VARCHAR(160) NULL',
             'nota_fiscal' => 'ALTER TABLE lista_compras ADD COLUMN nota_fiscal VARCHAR(80) NULL',
             'custo_unitario_real' => 'ALTER TABLE lista_compras ADD COLUMN custo_unitario_real DECIMAL(12,4) NULL',
-            'recebido_em' => 'ALTER TABLE lista_compras ADD COLUMN recebido_em DATETIME NULL',
+            'recebido_em' => 'ALTER TABLE lista_compras ADD COLUMN recebido_em TIMESTAMP NULL',
             'observacoes' => 'ALTER TABLE lista_compras ADD COLUMN observacoes VARCHAR(255) NULL'
         ];
         foreach ($listaAdditions as $column => $sql) {
@@ -1178,8 +1190,8 @@ function ensureCoreOperationalTables(PDO $pdo): void {
             tipo_desconto ENUM('percentual','valor') NOT NULL DEFAULT 'percentual',
             valor_desconto DECIMAL(12,2) NOT NULL,
             valor_minimo_pedido DECIMAL(12,2) NOT NULL DEFAULT 0,
-            validade_inicio DATETIME NULL,
-            validade_fim DATETIME NULL,
+            validade_inicio TIMESTAMP NULL,
+            validade_fim TIMESTAMP NULL,
             limite_uso INT NULL,
             usos_atuais INT NOT NULL DEFAULT 0,
             ativo TINYINT(1) NOT NULL DEFAULT 1,
@@ -1223,7 +1235,7 @@ function ensureCoreOperationalTables(PDO $pdo): void {
             cliente_id INT NULL,
             payload JSON NULL,
             status VARCHAR(20) NOT NULL DEFAULT 'pendente',
-            executado_em DATETIME NULL,
+            executado_em TIMESTAMP NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             INDEX idx_marketing_tipo_status (tipo, status, created_at)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
@@ -1241,7 +1253,7 @@ function ensureCoreOperationalTables(PDO $pdo): void {
             status VARCHAR(20) NOT NULL DEFAULT 'gerado',
             actor_id INT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            impresso_em DATETIME NULL,
+            impresso_em TIMESTAMP NULL,
             UNIQUE KEY uniq_kds_print (comanda_id, setor, payload_hash),
             INDEX idx_kds_print_status (status, created_at),
             INDEX idx_kds_print_comanda_setor (comanda_id, setor, created_at),
@@ -1453,3 +1465,15 @@ persistBootstrapLog($pdo, 'info', 'Bootstrap de schema finalizado', [
 ]);
 registerGlobalErrorHandlers($pdo);
 registerApiRequestLogging($pdo);
+
+// Existing DATETIME data requires the explicit, backed-up migration first.
+// Fresh databases use TIMESTAMP from bootstrap and need no historical conversion.
+if (!hasSchemaVersion($pdo, '2026.09.14.utc_storage.v1')) {
+    $legacyDates = (int)$pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND DATA_TYPE='datetime'")->fetchColumn();
+    if ($legacyDates === 0) markSchemaVersion($pdo, '2026.09.14.utc_storage.v1', 'Native TIMESTAMP schema; UTC connection contract');
+}
+if (hasSchemaVersion($pdo, '2026.09.14.utc_storage.v1')) {
+    $pdo->exec("SET time_zone='+00:00'");
+    date_default_timezone_set('UTC');
+    $GLOBALS['comandaUtcContract'] = true;
+}

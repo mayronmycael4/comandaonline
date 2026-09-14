@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once __DIR__ . '/time_contract.php';
 
 exigirModulo($pdo, 'cozinha');
 
@@ -53,7 +54,7 @@ function ensureKitchenColumns(PDO $pdo): array {
         'kitchen_status'    => "ENUM('recebido','em_preparo','pronto','entregue','cancelado') NOT NULL DEFAULT 'recebido'",
         'kitchen_pronto_at' => 'TIMESTAMP NULL DEFAULT NULL',
         'kitchen_setor'     => "VARCHAR(40) NOT NULL DEFAULT 'cozinha'",
-        'enviado_producao_at' => 'DATETIME NULL DEFAULT NULL',
+        'enviado_producao_at' => 'TIMESTAMP NULL DEFAULT NULL',
         'observacoes'       => 'TEXT NULL DEFAULT NULL',
     ];
 
@@ -97,7 +98,7 @@ if ($method === 'GET') {
     // Monta SELECT adaptado às colunas disponíveis
     $selObservacoes     = $hasObservacoes     ? 'ci.observacoes   AS item_obs,'  : "NULL AS item_obs,";
     $selKitchenStatus   = $hasKitchenStatus   ? 'ci.kitchen_status,'             : "'recebido' AS kitchen_status,";
-    $selKitchenProntoAt = $hasKitchenProntoAt ? 'ci.kitchen_pronto_at,'          : 'NULL AS kitchen_pronto_at,';
+    $selKitchenProntoAt = $hasKitchenProntoAt ? 'UNIX_TIMESTAMP(ci.kitchen_pronto_at) AS kitchen_pronto_at,' : 'NULL AS kitchen_pronto_at,';
     $selKitchenSetor    = in_array('kitchen_setor', $existingCols, true) ? 'ci.kitchen_setor,' : "'cozinha' AS kitchen_setor,";
     $selComandasObs     = $hasComandasObs     ? 'c.observacoes AS comanda_obs,'  : "NULL AS comanda_obs,";
 
@@ -111,18 +112,18 @@ if ($method === 'GET') {
             ci.quantidade,
             ci.valor_unitario,
             ci.adicionais,
-            ci.enviado_cozinha_em,
+            UNIX_TIMESTAMP(ci.enviado_cozinha_em) AS enviado_cozinha_em,
             {$selObservacoes}
             {$selKitchenStatus}
             {$selKitchenProntoAt}
             {$selKitchenSetor}
-            ci.created_at    AS item_criado_em,
+            UNIX_TIMESTAMP(ci.created_at) AS item_criado_em,
             TIMESTAMPDIFF(MINUTE, ci.created_at, NOW()) AS item_minutos_decorridos,
             c.numero_mesa,
             c.status         AS comanda_status,
             {$selComandasObs}
-            c.updated_at     AS comanda_atualizada_em,
-            c.created_at     AS comanda_criada_em,
+            UNIX_TIMESTAMP(c.updated_at) AS comanda_atualizada_em,
+            UNIX_TIMESTAMP(c.created_at) AS comanda_criada_em,
             TIMESTAMPDIFF(MINUTE, c.created_at, NOW()) AS comanda_minutos_decorridos,
             f.nome           AS funcionario_nome,
             cl.nome          AS cliente_nome
@@ -185,8 +186,7 @@ if ($method === 'GET') {
                     : ($row['item_criado_em'] ?? null);
 
                 if ($canceladoEm) {
-                    $canceladoEmTs = strtotime((string)$canceladoEm);
-                    if ($canceladoEmTs !== false && (time() - $canceladoEmTs) >= CANCELADO_PENDENTE_LIMITE_SEGUNDOS) {
+                    if ((time() - (int)$canceladoEm) >= CANCELADO_PENDENTE_LIMITE_SEGUNDOS) {
                         continue;
                     }
                 }
@@ -204,7 +204,7 @@ if ($method === 'GET') {
                     'comanda_obs'       => $row['comanda_obs'],
                     'funcionario_nome'  => $row['funcionario_nome'],
                     'cliente_nome'      => $row['cliente_nome'],
-                    'comanda_criada_em' => $row['comanda_criada_em'],
+                    'comanda_criada_em' => comanda_epoch_iso($row['comanda_criada_em']),
                     'comanda_minutos_decorridos' => isset($row['comanda_minutos_decorridos']) ? (int)$row['comanda_minutos_decorridos'] : null,
                     'itens'             => [],
                 ];
@@ -214,16 +214,16 @@ if ($method === 'GET') {
                 'item_id'          => (int) $row['item_id'],
                 'produto_id'       => $row['produto_id'],
                 'adicionais'       => json_decode($row['adicionais'] ?? '[]', true) ?: [],
-                'enviado_cozinha_em' => $row['enviado_cozinha_em'],
+                'enviado_cozinha_em' => comanda_epoch_iso($row['enviado_cozinha_em']),
                 'nome_item'        => nomeItemSemPrefixoCancelado($row['nome_item']),
                 'categoria'        => $row['categoria'],
                 'quantidade'       => (int) $row['quantidade'],
                 'valor_unitario'   => (float) $row['valor_unitario'],
                 'observacoes'      => $row['item_obs'],
                 'kitchen_status'   => $kitchenStatus,
-                'kitchen_pronto_at'=> $row['kitchen_pronto_at'],
+                'kitchen_pronto_at'=> comanda_epoch_iso($row['kitchen_pronto_at']),
                 'kitchen_setor'    => $row['kitchen_setor'] ?? 'cozinha',
-                'item_criado_em'   => $row['item_criado_em'],
+                'item_criado_em'   => comanda_epoch_iso($row['item_criado_em']),
                 'item_minutos_decorridos' => isset($row['item_minutos_decorridos']) ? (int)$row['item_minutos_decorridos'] : null,
             ];
         }
@@ -231,6 +231,7 @@ if ($method === 'GET') {
 
     jsonResponse([
         'server_time_ms' => (int)(microtime(true) * 1000),
+        'timezone'      => comanda_company_timezone($pdo),
         'pedidos'        => array_values($grupados),
     ]);
 }

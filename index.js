@@ -220,13 +220,13 @@ async function atualizarStats() {
     try {
         const comandas = Array.isArray(dashboardComandas) ? dashboardComandas : [];
         Storage.notificarPedidosProntos(comandas);
-        const hoje = new Date();
+        const hoje = Storage.companyNow();
         
         const abertas = comandas.filter(c => c.status === 'aberta');
         const fechadasHoje = comandas.filter(c => {
             if (c.status !== 'fechada') return false;
             const dataFechamento = c.fechamento ? new Date(c.fechamento.data) : new Date(c.createdAt);
-            return dataFechamento.toDateString() === hoje.toDateString();
+            return Storage.companyDate(dataFechamento) === Storage.companyDate(hoje);
         });
         
         const relatorioHoje = await Storage.getRelatorioDia(hoje);
@@ -404,6 +404,5 @@ function escapeHtml(text) {
 }
 
 function formatDateTime(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleString('pt-BR');
+    return Storage.companyDateTime(dateString);
 }
