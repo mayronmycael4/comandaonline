@@ -1,0 +1,6 @@
+<FilesMatch "\.(sql|log)$">
+    Require all denied
+</FilesMatch>
+<Files "db_runtime_config.php">
+    Require all denied
+</Files>

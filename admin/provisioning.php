@@ -104,6 +104,14 @@ function tenant_importar_estrutura(string $dbName, string $prefix = ''): void
 
     $pdo = tenant_conectar($dbName, $prefix);
 
+    if ($prefix !== '') {
+        $existing = $pdo->prepare('SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA=? AND LEFT(TABLE_NAME, CHAR_LENGTH(?))=?');
+        $existing->execute([$dbName, $prefix, $prefix]);
+        if ((int)$existing->fetchColumn() > 0) {
+            throw new TenantProvisioningException('Prefixo de tabelas ja existente. Provisionamento interrompido para preservar os dados.');
+        }
+    }
+
     $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
 
     foreach (tenant_dividir_statements($sql) as $statement) {

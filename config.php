@@ -1469,7 +1469,10 @@ registerApiRequestLogging($pdo);
 // Existing DATETIME data requires the explicit, backed-up migration first.
 // Fresh databases use TIMESTAMP from bootstrap and need no historical conversion.
 if (!hasSchemaVersion($pdo, '2026.09.14.utc_storage.v1')) {
-    $legacyDates = (int)$pdo->query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND DATA_TYPE='datetime'")->fetchColumn();
+    $tenantPrefix = comanda_prefixo_tenant_atual($pdo);
+    $legacyStatement = $pdo->prepare("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND DATA_TYPE='datetime' AND (?='' OR LEFT(TABLE_NAME,CHAR_LENGTH(?))=?)");
+    $legacyStatement->execute([$tenantPrefix, $tenantPrefix, $tenantPrefix]);
+    $legacyDates = (int)$legacyStatement->fetchColumn();
     if ($legacyDates === 0) markSchemaVersion($pdo, '2026.09.14.utc_storage.v1', 'Native TIMESTAMP schema; UTC connection contract');
 }
 if (hasSchemaVersion($pdo, '2026.09.14.utc_storage.v1')) {
