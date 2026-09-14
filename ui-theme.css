@@ -32,3 +32,7 @@ html body :is(.profile-dropdown,.comanda-actions-menu){background:var(--ui-card)
 .ui-header-actions{display:flex;align-items:center;gap:6px}.ui-header-actions button{min-width:36px;min-height:36px;background:var(--ui-muted)!important;color:var(--ui-fg)!important;border:1px solid var(--ui-border)!important;border-radius:8px}
 @media(max-width:768px){html body :is(.btn,button,input,select){min-height:40px}html body :is(input,select,textarea){font-size:16px}.ui-page-context{padding-left:8px}.ui-topbar{gap:8px}.ui-shell .stats-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}}
 @media print{html body{background:white!important;color:black!important}html body :is(.card,table){color:black!important;background:white!important;box-shadow:none!important}}
+
+html body .mobile-comanda-tools{background:var(--ui-muted)!important;border:1px solid var(--ui-border)!important;box-shadow:none!important;border-radius:var(--ui-radius)!important}html body .mobile-comanda-tools :is(label,.hint),html body .status-chip{color:var(--ui-fg)!important}html body .status-chip{background:var(--ui-card)!important;border:1px solid var(--ui-border)!important;border-radius:8px!important}html body .status-chip.active{background:var(--ui-primary)!important;color:var(--ui-on-primary)!important;border-color:var(--ui-primary)!important}
+
+html body :is(.card h2,.card h3,.panel h2){border-color:var(--ui-border)!important}html body .comanda-actions-trigger{background:var(--ui-muted)!important;color:var(--ui-fg)!important;border:1px solid var(--ui-border)!important}

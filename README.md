@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Comanda Online
 
 ## Descrição
@@ -181,3 +182,6 @@ Comanda-Online-main/
 ## Contribuição
 
 Se você deseja contribuir para o projeto, sinta-se à vontade para abrir uma issue ou enviar um pull request.
+=======
+# comandaonline
+>>>>>>> origin/main

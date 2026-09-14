@@ -34,15 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="utf-8">
 <title>Login - Painel Comanda Online</title>
 <link rel="stylesheet" href="assets/style.css">
-<script src="assets/login-robots.js" defer></script>
-<link rel="stylesheet" href="../ui-theme.css?v=20260909">
-<link rel="stylesheet" href="../ui-login.css?v=20260909">
-<script defer src="../ui-login.js?v=20260909"></script>
+<link rel="stylesheet" href="../ui-theme.css?v=20260909r2">
+<link rel="stylesheet" href="../ui-login.css?v=20260909r2">
+<script defer src="../ui-login.js?v=20260909r2"></script>
 </head>
 <body>
 <div class="login-page">
-    <div class="admin-login-robot-rain" aria-hidden="true"></div>
-    <div class="login-box admin-login-box">
+    <div class="login-box">
         <h1>Painel Comanda Online</h1>
         <?php if ($erro): ?>
             <div class="flash flash-error"><?= e($erro) ?></div>

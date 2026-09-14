@@ -1,0 +1,8 @@
+**/*.php
+**/*.sql
+admin/
+backups/
+logs/
+saas-app/
+tmp_*
+.git/

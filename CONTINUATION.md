@@ -1,5 +1,15 @@
 # Sprint unico — ponto de continuacao
 
+## Solicitacao mais recente — GitHub, Supabase e Vercel
+
+- Usuario pediu publicacao nos tres destinos, repositorio https://github.com/mayronmycael4/comandaonline.git.
+- GitHub enviado com sucesso: branch codex/cloud-migration-20260914, commit22c4dca. Snapshot validado ate5bdebbf, consolidado para nao enviar a senha de testes adicionada no historico local. Copia de publicacao em C:/Users/malvezdossan/AppData/Local/Temp/comanda-cloud-publish-20260914; caminho tambem em tmp_cloud_publish_path.txt. Main remota preservada.
+- Motivo da branch: workflow remoto na main faz deploy automatico para InfinityFree, destino diferente do solicitado. Nao disparado. DEPLOYMENT_STATUS.md na branch documenta estado.
+- Na copia publicada: testes administrativos usam COMANDA_QA_EMAIL/COMANDA_QA_PASSWORD; senha inicial via COMANDA_BOOTSTRAP_PASSWORD ou aleatoria. Credencial de banco presente em alteracao local NAO COMMITADA de admin/config.php nao foi incluida. Preservar trabalho local em andamento.
+- Supabase/Vercel NAO publicados. Nenhum conector/CLI disponivel encontrado; nenhum projeto configurado localmente. Pergunta async pendente: links dos projetos existentes ou indicacao para criar novos; nunca pedir chaves no chat.
+- Next.js local incompleto: app/page.tsx apenas inicial, links/login e/cadastro sem rotas, package.json sem dependencias, helpers Supabase com env placeholders, sem migracoes Postgres. Nao apresentar essa base como substituta funcional do PHP/MariaDB.
+- Sprint anterior: bloco2 commit5bdebbf; bloco3 apenas diagnostico inicial (ui-shell aplica tema/estrutura no DOMContentLoaded; mobile-routing no head; ainda sem correcoes). Proximo trabalho depende da direcao de publicacao do usuario; manter pendencias dos blocos3–9.
+
 ## Estado em 14/09/2026 — checkpoint atual
 
 Blocos 1 e 2 implementados no escopo documentado em NOTES.md. Proximo bloco: **3 — Flash branco/legado**. Nao refazer login/sidebar/layouts. Blocos 3–9 pendentes. **NAO PRONTO PARA PRODUCAO.** O historico abaixo conserva o diagnostico anterior; o checkpoint atual e NOTES.md prevalecem sobre os itens antigos marcados pendentes do bloco2.
