@@ -1,8 +1,32 @@
 <?php
 require_once 'config.php';
+require_once __DIR__ . '/time_contract.php';
+$companyTimezone = comanda_company_timezone($pdo);
+date_default_timezone_set($companyTimezone);
 
 $method = $_SERVER['REQUEST_METHOD'];
 $format = strtolower(trim((string)($_GET['format'] ?? 'json')));
+
+function reportEpochBounds(string $inicio, string $fim): array {
+    global $companyTimezone;
+    try {
+        return comanda_report_epoch_bounds(substr($inicio, 0, 10), substr($fim, 0, 10), $companyTimezone);
+    } catch (InvalidArgumentException $e) {
+        jsonResponse(['error' => $e->getMessage()], 400);
+    }
+}
+
+function reportGroupTime(array $rows, string $key, string $format, array $metrics): array {
+    global $companyTimezone;
+    $groups = [];
+    foreach ($rows as $row) {
+        $bucket = (new DateTimeImmutable('@' . $row['epoch']))->setTimezone(comanda_timezone($companyTimezone))->format($format);
+        if (!isset($groups[$bucket])) $groups[$bucket] = [$key => $bucket] + array_fill_keys($metrics, 0);
+        foreach ($metrics as $metric) $groups[$bucket][$metric] += (float)$row[$metric];
+    }
+    ksort($groups);
+    return array_values($groups);
+}
 
 function isAssocArray(array $arr): bool {
     if (array() === $arr) return false;
@@ -83,24 +107,25 @@ $tipo = $_GET['tipo'] ?? 'dia'; // dia, semana, mes, ano, periodo
 if ($tipo === 'ticket_medio') {
     $inicio = ($_GET['inicio'] ?? date('Y-m-d')) . ' 00:00:00';
     $fim = ($_GET['fim'] ?? date('Y-m-d')) . ' 23:59:59';
+    [$inicioEpoch, $fimEpoch] = reportEpochBounds($inicio, $fim);
     $agrupamento = strtolower(trim((string)($_GET['agrupar'] ?? 'dia')));
     if (!in_array($agrupamento, ['dia', 'turno', 'mesa'], true)) {
         $agrupamento = 'dia';
     }
 
         $stmt = $pdo->prepare("
-                SELECT c.id, c.numero_mesa, c.total, c.fechamento_data
+                SELECT c.id, c.numero_mesa, c.total, UNIX_TIMESTAMP(c.fechamento_data) AS fechamento_epoch
                 FROM comandas c
                 WHERE c.status = 'fechada'
-                    AND c.fechamento_data BETWEEN ? AND ?
+                    AND UNIX_TIMESTAMP(c.fechamento_data) >= ? AND UNIX_TIMESTAMP(c.fechamento_data) < ?
                 ORDER BY c.fechamento_data ASC
         ");
-    $stmt->execute([$inicio, $fim]);
+    $stmt->execute([$inicioEpoch, $fimEpoch]);
     $comandas = $stmt->fetchAll();
 
     $grupos = [];
     foreach ($comandas as $comanda) {
-        $dataFechamento = (string)($comanda['fechamento_data'] ?? '');
+        $dataFechamento = comanda_epoch_iso($comanda['fechamento_epoch']);
         $hora = (int)date('H', strtotime($dataFechamento));
         $mesa = (string)($comanda['numero_mesa'] ?? 'sem_mesa');
         $turno = 'noite';
@@ -149,6 +174,7 @@ if ($tipo === 'ticket_medio') {
 if ($tipo === 'cancelamentos') {
     $inicio = ($_GET['inicio'] ?? date('Y-m-d')) . ' 00:00:00';
     $fim = ($_GET['fim'] ?? date('Y-m-d')) . ' 23:59:59';
+    [$inicioEpoch, $fimEpoch] = reportEpochBounds($inicio, $fim);
     $funcionarioId = isset($_GET['funcionario_id']) ? (int)$_GET['funcionario_id'] : 0;
     $produtoBusca = trim((string)($_GET['produto'] ?? ''));
 
@@ -156,14 +182,14 @@ if ($tipo === 'cancelamentos') {
     $sqlLogs = "
         SELECT al.*
         FROM action_log al
-        WHERE al.created_at BETWEEN :inicio AND :fim
+        WHERE UNIX_TIMESTAMP(al.created_at) >= :inicio AND UNIX_TIMESTAMP(al.created_at) < :fim
           AND al.acao IN ('comanda_cancelada', 'comanda_item_cancelado')
           {$filtroFunc}
         ORDER BY al.created_at DESC
     ";
     $stmt = $pdo->prepare($sqlLogs);
-    $stmt->bindValue(':inicio', $inicio);
-    $stmt->bindValue(':fim', $fim);
+    $stmt->bindValue(':inicio', $inicioEpoch, PDO::PARAM_INT);
+    $stmt->bindValue(':fim', $fimEpoch, PDO::PARAM_INT);
     if ($funcionarioId > 0) {
         $stmt->bindValue(':fid', $funcionarioId, PDO::PARAM_INT);
     }
@@ -177,7 +203,7 @@ if ($tipo === 'cancelamentos') {
         JOIN comandas c ON c.id = ci.comanda_id
         LEFT JOIN funcionarios f ON f.id = c.funcionario_id
         WHERE ci.nome_item LIKE :cancelado
-          AND ci.created_at BETWEEN :inicio AND :fim
+          AND UNIX_TIMESTAMP(ci.created_at) >= :inicio AND UNIX_TIMESTAMP(ci.created_at) < :fim
     ";
     if ($funcionarioId > 0) {
         $sqlItens .= ' AND c.funcionario_id = :fid ';
@@ -189,8 +215,8 @@ if ($tipo === 'cancelamentos') {
 
     $stmt = $pdo->prepare($sqlItens);
     $stmt->bindValue(':cancelado', '[CANCELADO] %');
-    $stmt->bindValue(':inicio', $inicio);
-    $stmt->bindValue(':fim', $fim);
+    $stmt->bindValue(':inicio', $inicioEpoch, PDO::PARAM_INT);
+    $stmt->bindValue(':fim', $fimEpoch, PDO::PARAM_INT);
     if ($funcionarioId > 0) {
         $stmt->bindValue(':fid', $funcionarioId, PDO::PARAM_INT);
     }
@@ -225,6 +251,7 @@ if ($tipo === 'cancelamentos') {
 if ($tipo === 'gerencial') {
         $inicio = ($_GET['inicio'] ?? date('Y-m-d', strtotime('-7 days'))) . ' 00:00:00';
         $fim = ($_GET['fim'] ?? date('Y-m-d')) . ' 23:59:59';
+    [$inicioEpoch, $fimEpoch] = reportEpochBounds($inicio, $fim);
 
         $stmt = $pdo->prepare("
                 SELECT ci.categoria,
@@ -233,10 +260,10 @@ if ($tipo === 'gerencial') {
                 JOIN comandas c ON c.id = ci.comanda_id
                 WHERE ci.kitchen_pronto_at IS NOT NULL
                     AND ci.nome_item NOT LIKE ?
-                    AND c.created_at BETWEEN ? AND ?
+                    AND UNIX_TIMESTAMP(c.created_at) >= ? AND UNIX_TIMESTAMP(c.created_at) < ?
                 GROUP BY ci.categoria
         ");
-        $stmt->execute(['[CANCELADO] %', $inicio, $fim]);
+        $stmt->execute(['[CANCELADO] %', $inicioEpoch, $fimEpoch]);
         $tempoPreparoPorCategoria = $stmt->fetchAll();
 
         $stmt = $pdo->prepare("
@@ -244,9 +271,9 @@ if ($tipo === 'gerencial') {
                 FROM comandas c
                 WHERE c.status = 'fechada'
                     AND c.fechamento_data IS NOT NULL
-                    AND c.fechamento_data BETWEEN ? AND ?
+                    AND UNIX_TIMESTAMP(c.fechamento_data) >= ? AND UNIX_TIMESTAMP(c.fechamento_data) < ?
         ");
-        $stmt->execute([$inicio, $fim]);
+        $stmt->execute([$inicioEpoch, $fimEpoch]);
         $tempoMedioEntrega = (float)($stmt->fetchColumn() ?? 0);
 
         $stmt = $pdo->prepare("
@@ -254,38 +281,34 @@ if ($tipo === 'gerencial') {
                              COUNT(*) AS total_cancelamentos
                 FROM action_log al
                 LEFT JOIN funcionarios f ON f.id = al.actor_id
-                WHERE al.created_at BETWEEN ? AND ?
+                WHERE UNIX_TIMESTAMP(al.created_at) >= ? AND UNIX_TIMESTAMP(al.created_at) < ?
                     AND al.acao IN ('comanda_cancelada', 'comanda_item_cancelado')
                 GROUP BY al.actor_id, f.nome
                 ORDER BY total_cancelamentos DESC
         ");
-        $stmt->execute([$inicio, $fim]);
+        $stmt->execute([$inicioEpoch, $fimEpoch]);
         $cancelamentosPorFuncionario = $stmt->fetchAll();
 
         $stmt = $pdo->prepare("
-                SELECT DATE_FORMAT(al.created_at, '%H:00') AS hora,
-                             COUNT(*) AS total_cancelamentos
+                SELECT UNIX_TIMESTAMP(al.created_at) AS epoch, 1 AS total_cancelamentos
                 FROM action_log al
-                WHERE al.created_at BETWEEN ? AND ?
+                WHERE UNIX_TIMESTAMP(al.created_at) >= ? AND UNIX_TIMESTAMP(al.created_at) < ?
                     AND al.acao IN ('comanda_cancelada', 'comanda_item_cancelado')
-                GROUP BY DATE_FORMAT(al.created_at, '%H:00')
-                ORDER BY hora ASC
+                ORDER BY al.created_at ASC
         ");
-        $stmt->execute([$inicio, $fim]);
-        $cancelamentosPorHora = $stmt->fetchAll();
+        $stmt->execute([$inicioEpoch, $fimEpoch]);
+        $cancelamentosPorHora = reportGroupTime($stmt->fetchAll(), 'hora', 'H:00', ['total_cancelamentos']);
 
         $stmt = $pdo->prepare("
-                SELECT DATE(lc.created_at) AS dia,
-                             COUNT(*) AS rupturas,
-                             SUM(lc.quantidade_necessaria) AS reposicao_necessaria
+                SELECT UNIX_TIMESTAMP(lc.created_at) AS epoch, 1 AS rupturas,
+                             lc.quantidade_necessaria AS reposicao_necessaria
                 FROM lista_compras lc
                 WHERE lc.status = 'pendente'
-                    AND lc.created_at BETWEEN ? AND ?
-                GROUP BY DATE(lc.created_at)
-                ORDER BY dia ASC
+                    AND UNIX_TIMESTAMP(lc.created_at) >= ? AND UNIX_TIMESTAMP(lc.created_at) < ?
+                ORDER BY lc.created_at ASC
         ");
-        $stmt->execute([$inicio, $fim]);
-        $rupturaPorDia = $stmt->fetchAll();
+        $stmt->execute([$inicioEpoch, $fimEpoch]);
+        $rupturaPorDia = reportGroupTime($stmt->fetchAll(), 'dia', 'Y-m-d', ['rupturas', 'reposicao_necessaria']);
 
         $stmt = $pdo->prepare("
                 SELECT e.nome AS item_estoque,
@@ -294,12 +317,12 @@ if ($tipo === 'gerencial') {
                              COALESCE(SUM(ci.quantidade), 0) AS vendas_relacionadas
                 FROM estoque e
                 LEFT JOIN comanda_itens ci ON LOWER(ci.nome_item) LIKE CONCAT('%', LOWER(e.nome), '%')
-                LEFT JOIN comandas c ON c.id = ci.comanda_id AND c.created_at BETWEEN ? AND ?
+                LEFT JOIN comandas c ON c.id = ci.comanda_id AND UNIX_TIMESTAMP(c.created_at) >= ? AND UNIX_TIMESTAMP(c.created_at) < ?
                 WHERE e.quantidade <= e.quantidade_minima
                 GROUP BY e.id, e.nome, e.quantidade, e.quantidade_minima
                 ORDER BY vendas_relacionadas DESC
         ");
-        $stmt->execute([$inicio, $fim]);
+        $stmt->execute([$inicioEpoch, $fimEpoch]);
         $impactoRuptura = $stmt->fetchAll();
 
         reportResponse($tipo, [
@@ -316,21 +339,21 @@ if ($tipo === 'gerencial') {
 if ($tipo === 'picos_hora') {
     $inicio = ($_GET['inicio'] ?? date('Y-m-d', strtotime('-7 days'))) . ' 00:00:00';
     $fim = ($_GET['fim'] ?? date('Y-m-d')) . ' 23:59:59';
+    [$inicioEpoch, $fimEpoch] = reportEpochBounds($inicio, $fim);
 
-    $stmt = $pdo->prepare("SELECT DATE_FORMAT(fechamento_data, '%H:00') AS hora,
-                                  COUNT(*) AS total_comandas,
-                                  COALESCE(SUM(total),0) AS faturamento
+    $stmt = $pdo->prepare("SELECT UNIX_TIMESTAMP(fechamento_data) AS epoch,
+                                  1 AS total_comandas, total AS faturamento
                            FROM comandas
-                           WHERE status = 'fechada' AND fechamento_data BETWEEN ? AND ?
-                           GROUP BY DATE_FORMAT(fechamento_data, '%H:00')
-                           ORDER BY hora ASC");
-    $stmt->execute([$inicio, $fim]);
-    reportResponse($tipo, ['periodo' => ['inicio' => $inicio, 'fim' => $fim], 'picos_hora' => $stmt->fetchAll()], $format);
+                           WHERE status = 'fechada' AND UNIX_TIMESTAMP(fechamento_data) >= ? AND UNIX_TIMESTAMP(fechamento_data) < ?
+                           ORDER BY fechamento_data ASC");
+    $stmt->execute([$inicioEpoch, $fimEpoch]);
+    reportResponse($tipo, ['periodo' => ['inicio' => $inicio, 'fim' => $fim], 'picos_hora' => reportGroupTime($stmt->fetchAll(), 'hora', 'H:00', ['total_comandas', 'faturamento'])], $format);
 }
 
 if ($tipo === 'kds_gargalos') {
     $inicio = ($_GET['inicio'] ?? date('Y-m-d', strtotime('-7 days'))) . ' 00:00:00';
     $fim = ($_GET['fim'] ?? date('Y-m-d')) . ' 23:59:59';
+    [$inicioEpoch, $fimEpoch] = reportEpochBounds($inicio, $fim);
     $slaMin = max(1, min(180, (int)($_GET['sla_min'] ?? 15)));
 
     $stmt = $pdo->prepare("SELECT kitchen_setor,
@@ -341,10 +364,10 @@ if ($tipo === 'kds_gargalos') {
                            FROM comanda_itens
                            WHERE kitchen_pronto_at IS NOT NULL
                              AND nome_item NOT LIKE ?
-                             AND created_at BETWEEN ? AND ?
+                             AND UNIX_TIMESTAMP(created_at) >= ? AND UNIX_TIMESTAMP(created_at) < ?
                            GROUP BY kitchen_setor, categoria
                            ORDER BY atrasados DESC, tempo_medio_min DESC");
-    $stmt->execute([$slaMin, '[CANCELADO] %', $inicio, $fim]);
+    $stmt->execute([$slaMin, '[CANCELADO] %', $inicioEpoch, $fimEpoch]);
     $rows = $stmt->fetchAll();
 
     $rows = array_map(static function ($r) {
@@ -360,16 +383,17 @@ if ($tipo === 'kds_gargalos') {
 if ($tipo === 'desvios') {
     $inicio = ($_GET['inicio'] ?? date('Y-m-d', strtotime('-30 days'))) . ' 00:00:00';
     $fim = ($_GET['fim'] ?? date('Y-m-d')) . ' 23:59:59';
+    [$inicioEpoch, $fimEpoch] = reportEpochBounds($inicio, $fim);
 
     $stmt = $pdo->prepare("SELECT COALESCE(actor_nome, CONCAT('ID ', actor_id)) AS usuario,
                                   acao,
                                   COUNT(*) AS total
                            FROM action_log
-                           WHERE created_at BETWEEN ? AND ?
+                           WHERE UNIX_TIMESTAMP(created_at) >= ? AND UNIX_TIMESTAMP(created_at) < ?
                              AND acao IN ('comanda_cancelada','comanda_item_cancelado','comanda_desconto_aplicado','pagamento_estornado')
                            GROUP BY usuario, acao
                            ORDER BY total DESC");
-    $stmt->execute([$inicio, $fim]);
+    $stmt->execute([$inicioEpoch, $fimEpoch]);
 
     reportResponse($tipo, ['periodo' => ['inicio' => $inicio, 'fim' => $fim], 'desvios_por_usuario' => $stmt->fetchAll()], $format);
 }
@@ -377,23 +401,24 @@ if ($tipo === 'desvios') {
 if ($tipo === 'lucro') {
     $inicio = ($_GET['inicio'] ?? date('Y-m-d', strtotime('-30 days'))) . ' 00:00:00';
     $fim = ($_GET['fim'] ?? date('Y-m-d')) . ' 23:59:59';
+    [$inicioEpoch, $fimEpoch] = reportEpochBounds($inicio, $fim);
 
     $stmt = $pdo->prepare("SELECT COALESCE(SUM(valor),0) AS faturamento
                            FROM pagamentos_comanda
-                           WHERE status = 'confirmado' AND created_at BETWEEN ? AND ?");
-    $stmt->execute([$inicio, $fim]);
+                           WHERE status = 'confirmado' AND UNIX_TIMESTAMP(created_at) >= ? AND UNIX_TIMESTAMP(created_at) < ?");
+    $stmt->execute([$inicioEpoch, $fimEpoch]);
     $faturamento = (float)$stmt->fetchColumn();
 
     $stmt = $pdo->prepare("SELECT COALESCE(SUM(quantidade * custo_unitario),0) AS cmv
                            FROM estoque_movimentacoes
-                           WHERE tipo = 'saida_venda' AND created_at BETWEEN ? AND ?");
-    $stmt->execute([$inicio, $fim]);
+                           WHERE tipo = 'saida_venda' AND UNIX_TIMESTAMP(created_at) >= ? AND UNIX_TIMESTAMP(created_at) < ?");
+    $stmt->execute([$inicioEpoch, $fimEpoch]);
     $cmv = (float)$stmt->fetchColumn();
 
     $stmt = $pdo->prepare("SELECT tipo, COALESCE(SUM(valor),0) AS total FROM pagamentos_comanda
-                           WHERE status = 'confirmado' AND created_at BETWEEN ? AND ?
+                           WHERE status = 'confirmado' AND UNIX_TIMESTAMP(created_at) >= ? AND UNIX_TIMESTAMP(created_at) < ?
                            GROUP BY tipo");
-    $stmt->execute([$inicio, $fim]);
+    $stmt->execute([$inicioEpoch, $fimEpoch]);
     $porTipo = $stmt->fetchAll();
 
     $taxas = 0.0;
@@ -456,16 +481,26 @@ switch ($tipo) {
 }
 
 // Busca comandas fechadas no período
+try {
+    [$inicioEpoch, $fimEpoch] = comanda_report_epoch_bounds(substr($inicio, 0, 10), substr($fim, 0, 10), $companyTimezone);
+} catch (InvalidArgumentException $e) {
+    jsonResponse(['error' => $e->getMessage()], 400);
+}
 $stmt = $pdo->prepare("
-    SELECT c.*, f.nome as funcionario_nome
+    SELECT c.*, UNIX_TIMESTAMP(c.fechamento_data) AS fechamento_epoch, f.nome as funcionario_nome
     FROM comandas c
     LEFT JOIN funcionarios f ON c.funcionario_id = f.id
     WHERE c.status = 'fechada'
-    AND c.fechamento_data BETWEEN ? AND ?
+    AND UNIX_TIMESTAMP(c.fechamento_data) >= ? AND UNIX_TIMESTAMP(c.fechamento_data) < ?
     ORDER BY c.fechamento_data DESC
 ");
-$stmt->execute([$inicio, $fim]);
+$stmt->execute([$inicioEpoch, $fimEpoch]);
 $comandas = $stmt->fetchAll();
+foreach ($comandas as &$row) {
+    $row['fechamento_data'] = comanda_epoch_iso($row['fechamento_epoch']);
+    unset($row['fechamento_epoch']);
+}
+unset($row);
 
 $total = 0;
 $porCategoria = [];

@@ -493,6 +493,23 @@ const Storage = {
     },
 
     // ========== EMPRESA ==========
+    companyTimezone: 'America/Belem',
+    companyClockOffset: 0,
+    companyNow() {
+        return new Date(Date.now() + this.companyClockOffset);
+    },
+    companyDate(value = this.companyNow()) {
+        const parts = new Intl.DateTimeFormat('en-CA', {
+            timeZone: this.companyTimezone, year: 'numeric', month: '2-digit', day: '2-digit'
+        }).formatToParts(new Date(value));
+        const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+        return `${values.year}-${values.month}-${values.day}`;
+    },
+    companyDateTime(value) {
+        return new Intl.DateTimeFormat('pt-BR', {
+            timeZone: this.companyTimezone, dateStyle: 'short', timeStyle: 'medium'
+        }).format(new Date(value));
+    },
     async getEmpresa() {
         if (!this.useMySQL) {
             const data = localStorage.getItem(this.EMPRESA_CACHE_KEY);
@@ -501,6 +518,8 @@ const Storage = {
         try {
             const empresa = await API.getEmpresa();
             if (empresa) {
+                this.companyTimezone = empresa.timezone || 'America/Belem';
+                if (typeof empresa.server_time_ms === 'number') this.companyClockOffset = empresa.server_time_ms - Date.now();
                 localStorage.setItem(this.EMPRESA_CACHE_KEY, JSON.stringify(empresa));
             }
             return empresa;
@@ -865,6 +884,7 @@ const Storage = {
                 valor: parseFloat(i.valor_unitario || i.valor),
                 produtoId: i.produto_id,
                 observacoes: i.observacoes || null,
+                adicionais: Array.isArray(i.adicionais) ? i.adicionais : JSON.parse(i.adicionais || '[]'),
                 kitchenStatus: i.kitchen_status || 'pendente',
                 kitchenProntoAt: i.kitchen_pronto_at || null
             }))
@@ -1261,6 +1281,7 @@ const Storage = {
                 quantidade: i.quantidade,
                 valor: parseFloat(i.valor_unitario),
                 observacoes: i.observacoes || null,
+                adicionais: Array.isArray(i.adicionais) ? i.adicionais : JSON.parse(i.adicionais || '[]'),
                 canceladoEm: i.created_at || null
             })),
             itens: (c.itens || []).map(i => ({
@@ -1271,6 +1292,7 @@ const Storage = {
                 valor: parseFloat(i.valor_unitario),
                 produtoId: i.produto_id,
                 observacoes: i.observacoes || null,
+                adicionais: Array.isArray(i.adicionais) ? i.adicionais : JSON.parse(i.adicionais || '[]'),
                 kitchenStatus: i.kitchen_status || 'pendente'
             }))
         };
@@ -1298,7 +1320,8 @@ const Storage = {
                     categoria: i.categoria,
                     quantidade: i.quantidade,
                     valor: i.valor,
-                    observacoes: i.observacoes || null
+                    observacoes: i.observacoes || null,
+                    adicionais: i.adicionais || []
                 }))
             };
 
@@ -1310,6 +1333,12 @@ const Storage = {
 
             try {
                 const result = await API.updateComanda(payload);
+                if (Array.isArray(result?.itens_ids)) {
+                    result.itens_ids.forEach(mapping => {
+                        const item = (comanda.itens || []).find(i => String(i.id) === String(mapping.cliente_id));
+                        if (item) item.id = mapping.id;
+                    });
+                }
                 if (result && result.versao_nova) {
                     comanda.versao = Number(result.versao_nova);
                 }
@@ -1811,7 +1840,7 @@ const Storage = {
             const fim = new Date(data.getFullYear(), data.getMonth(), data.getDate(), 23, 59, 59);
             return this.calcularTotais(await this.getVendasPorPeriodo(inicio, fim));
         }
-        const result = await API.getRelatorio('dia', { data: data.toISOString().split('T')[0] });
+        const result = await API.getRelatorio('dia', { data: this.companyDate(data) });
         return this.normalizarRelatorio(result);
     },
 
@@ -1825,7 +1854,7 @@ const Storage = {
             fim.setHours(23, 59, 59);
             return this.calcularTotais(await this.getVendasPorPeriodo(inicio, fim));
         }
-        const result = await API.getRelatorio('semana', { data: data.toISOString().split('T')[0] });
+        const result = await API.getRelatorio('semana', { data: this.companyDate(data) });
         return this.normalizarRelatorio(result);
     },
 

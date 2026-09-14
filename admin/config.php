@@ -206,7 +206,7 @@ function saas_seed_dados_iniciais(PDO $pdo): void
 
         $totalUsuarios = (int) $pdo->query('SELECT COUNT(*) FROM users WHERE is_superadmin = 1')->fetchColumn();
         if ($totalUsuarios === 0) {
-            $hash = password_hash('TesteSenha123!', PASSWORD_BCRYPT);
+            $hash = password_hash((getenv('COMANDA_BOOTSTRAP_PASSWORD') ?: bin2hex(random_bytes(24))), PASSWORD_BCRYPT);
             $stmt = $pdo->prepare("INSERT INTO users (name, email, password, is_superadmin, ativo, created_at, updated_at) VALUES (?,?,?,1,1,NOW(),NOW())");
             $stmt->execute(['Superadministrador', 'superadmin@comandaonline.com', $hash]);
         }

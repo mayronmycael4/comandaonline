@@ -72,6 +72,7 @@ function exportSnapshot(PDO $pdo): array {
 
     return [
         'version' => 'auto-weekly-backup-v1',
+        'sql_timezone' => $pdo->query('SELECT @@session.time_zone')->fetchColumn(),
         'generated_at' => gmdate('c'),
         'database' => $GLOBALS['dbConfig']['dbname'] ?? null,
         'table_count' => count($tables),

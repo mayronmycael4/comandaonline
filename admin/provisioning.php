@@ -81,7 +81,7 @@ function tenant_criar_banco(string $dbName): void
     }
 
     $pdo = tenant_pdo_root();
-    $pdo->exec("DROP DATABASE IF EXISTS `{$dbName}`");
+    // Nunca apagar dados de uma instancia existente ao tentar provisionar.
     $pdo->exec("CREATE DATABASE `{$dbName}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
 }
 
@@ -230,7 +230,8 @@ function tenant_copiar_diretorio(string $origem, string $destino, array $excluir
         if ($item === '.' || $item === '..' || in_array($item, $excluir, true)) {
             continue;
         }
-        if (str_starts_with($item, 'tmp_')) {
+        if (str_starts_with($item, 'tmp_') || (str_starts_with($item, '.') && $item !== '.htaccess') || is_link($origem.DIRECTORY_SEPARATOR.$item)
+            || in_array($item, ['app', 'components', 'lib', 'tests', 'clientes'], true)) {
             continue;
         }
 
@@ -240,17 +241,22 @@ function tenant_copiar_diretorio(string $origem, string $destino, array $excluir
         if (is_dir($caminhoOrigem)) {
             tenant_copiar_diretorio($caminhoOrigem, $caminhoDestino, $excluir);
         } else {
-            copy($caminhoOrigem, $caminhoDestino);
+            if (!copy($caminhoOrigem, $caminhoDestino)) {
+                throw new TenantProvisioningException('Nao foi possivel copiar '.$item.'.');
+            }
         }
     }
 }
 
 function tenant_copiar_arquivos_da_aplicacao(string $slug): void
 {
+    if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
+        throw new TenantProvisioningException('Identificador de instancia invalido.');
+    }
     $destino = rtrim(TENANTS_CLIENTS_BASE_PATH, '/\\').DIRECTORY_SEPARATOR.$slug;
 
     if (is_dir($destino)) {
-        tenant_remover_diretorio($destino);
+        throw new TenantProvisioningException('A pasta da instancia ja existe. Os arquivos foram preservados.');
     }
 
     tenant_copiar_diretorio(TENANTS_LEGACY_SOURCE_PATH, $destino, TENANTS_EXCLUDE);
@@ -305,6 +311,10 @@ function tenant_provisionar(int $empresaId, string $adminNome, string $adminLogi
 
     if (!$empresa) {
         throw new TenantProvisioningException('Empresa nao encontrada.');
+    }
+
+    if (!empty($empresa['provisionado_em'])) {
+        throw new TenantProvisioningException('Esta instancia ja foi provisionada. Use a sincronizacao para atualizar seus dados.');
     }
 
     $slug = $empresa['slug'] ?: tenant_gerar_slug_unico($empresa['nome']);

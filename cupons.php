@@ -26,6 +26,14 @@ if ($method === 'GET') {
     jsonResponse($stmt->fetchAll());
 }
 
+if (in_array($method, ['POST','PUT'], true)) {
+    if (!empty($GLOBALS['comandaUtcContract'])) {
+        try {
+            foreach (['validade_inicio','validade_fim'] as $field) $data[$field] = comanda_input_instant($data[$field] ?? null, comanda_company_timezone($pdo));
+        } catch (InvalidArgumentException $e) { jsonResponse(['error'=>$e->getMessage()],400); }
+    }
+}
+
 if ($method === 'POST') {
     $codigo = strtoupper(trim((string)($data['codigo'] ?? '')));
     $tipo = strtolower(trim((string)($data['tipo_desconto'] ?? 'percentual')));

@@ -55,6 +55,10 @@ switch ($method) {
         $notaFiscal = trim((string)($data['nota_fiscal'] ?? ''));
         $observacoes = trim((string)($data['observacoes'] ?? ''));
         $recebidoEm = trim((string)($data['recebido_em'] ?? ''));
+        if (!empty($GLOBALS['comandaUtcContract']) && $recebidoEm !== '') {
+            try { $recebidoEm = comanda_input_instant($recebidoEm, comanda_company_timezone($pdo)); }
+            catch (InvalidArgumentException $e) { jsonResponse(['error'=>$e->getMessage()],400); }
+        }
         
         if (!$id || $status === '') {
             jsonResponse(['error' => 'id e status sao obrigatorios'], 400);

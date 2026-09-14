@@ -1,0 +1,34 @@
+/* Tokens from Controle Financeiro 9fa2dd7. Shared by PHP and static pages. */
+@font-face{font-family:Geist;src:url('assets/ui/geist-regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:Geist;src:url('assets/ui/geist-semibold.ttf') format('truetype');font-weight:500 900;font-display:swap}
+:root{--ui-radius:.65rem;--ui-bg:#fff;--ui-fg:#171717;--ui-card:#fff;--ui-primary:#262626;--ui-on-primary:#fafafa;--ui-muted:#f5f5f5;--ui-subtle:#737373;--ui-border:#e5e5e5;--ui-sidebar:#fafafa;--ui-danger:#ba292e;--ui-ring:#a3a3a3;--ui-width:16rem}
+:root[data-theme=dark]{--ui-bg:#171717;--ui-fg:#fafafa;--ui-card:#262626;--ui-primary:#e5e5e5;--ui-on-primary:#262626;--ui-muted:#404040;--ui-subtle:#a3a3a3;--ui-border:#ffffff1a;--ui-sidebar:#262626;--ui-danger:#ff6467;--ui-ring:#737373;color-scheme:dark}
+@supports(color:oklch(1 0 0)){:root{--ui-bg:oklch(1 0 0);--ui-fg:oklch(.145 0 0);--ui-primary:oklch(.205 0 0);--ui-on-primary:oklch(.985 0 0);--ui-muted:oklch(.97 0 0);--ui-subtle:oklch(.556 0 0);--ui-border:oklch(.922 0 0);--ui-sidebar:oklch(.985 0 0)}:root[data-theme=dark]{--ui-bg:oklch(.145 0 0);--ui-fg:oklch(.985 0 0);--ui-card:oklch(.205 0 0);--ui-primary:oklch(.922 0 0);--ui-on-primary:oklch(.205 0 0);--ui-muted:oklch(.269 0 0);--ui-subtle:oklch(.708 0 0);--ui-border:oklch(1 0 0 / 10%);--ui-sidebar:oklch(.205 0 0)}}
+.ui-icon{width:20px;height:20px;flex-shrink:0;display:inline-block;vertical-align:middle}
+.ui-icon-button{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;padding:8px;border:1px solid var(--ui-border);border-radius:8px;background:var(--ui-bg);color:var(--ui-fg);cursor:pointer}
+.ui-icon-button:hover{background:var(--ui-muted)}
+:where(.ui-login,.ui-shell) :focus-visible{outline:3px solid var(--ui-ring);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.ui-shell *,.ui-login *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Compatibility tokens let existing components keep their semantics and behavior. */
+html body{--bg:var(--ui-bg);--bg-soft:var(--ui-muted);--surface:var(--ui-card);--surface-2:var(--ui-card);--text:var(--ui-fg);--text-soft:var(--ui-subtle);--line:var(--ui-border);--border:var(--ui-border);--muted:var(--ui-subtle);--brand:var(--ui-primary);--brand-2:var(--ui-primary);--cor-primaria:var(--ui-primary);--cor-primaria-escura:var(--ui-primary);--cor-fundo:var(--ui-bg);--cor-texto:var(--ui-fg);--cor-borda:var(--ui-border);font-family:Geist,Arial,Helvetica,sans-serif!important;font-size:14px;color:var(--ui-fg)!important;background:var(--ui-bg)!important}
+html body :is(button,input,textarea,select){font-family:inherit}
+html body :is(.card,.stat-card,.panel,.produto,.modal-content,.modal-sheet,.comanda-card,.funcionario-card,.cliente-card,.produto-card,.estoque-card,.menu-side,.pedido-card){background:var(--ui-card)!important;color:var(--ui-fg)!important;border:1px solid var(--ui-border)!important;border-radius:var(--ui-radius)!important;box-shadow:0 1px 3px #0000000d!important}
+html body :is(.dashboard-header,.hero,.mobile-dashboard-hero){background:var(--ui-muted)!important;color:var(--ui-fg)!important;border:1px solid var(--ui-border)!important;border-radius:var(--ui-radius)!important;box-shadow:none!important}
+html body :is(h1,h2,h3,h4,.card-header,.brand-title){color:var(--ui-fg)}
+html body .dashboard-header :is(h1,h2,p),html body .hero :is(h1,h2,p){color:var(--ui-fg)!important}
+html body :is(.card h2,.panel h2,.produto h3,.stat-card .number){color:var(--ui-fg)!important}
+html body :is(.stat-card .label,.produto .desc,.hint,.text-muted,label){color:var(--ui-subtle)}
+html body :is(input:not([type=checkbox]):not([type=radio]):not([type=color]),select,textarea){background:var(--ui-bg)!important;color:var(--ui-fg)!important;border:1px solid var(--ui-border)!important;border-radius:8px;box-shadow:0 1px 2px #0000000d;max-width:100%}
+html body select option{color:var(--ui-fg)!important;background:var(--ui-card)!important}
+html body :is(input,select,textarea):focus-visible{outline:3px solid var(--ui-ring)!important;outline-offset:1px}
+html body :is(.btn-primary,.btn-acao,.btn:not(.btn-danger):not(.btn-success):not(.btn-warning):not(.btn-secondary):not(.btn-logout):not(.btn-cancelar):not(.btn-fechar),.cat-btn.active,.cart-fab){background:var(--ui-primary)!important;color:var(--ui-on-primary)!important;border-color:transparent!important;box-shadow:none!important;border-radius:8px}
+html body :is(.btn-secondary,.btn-logout,.cat-btn){background:var(--ui-muted)!important;color:var(--ui-fg)!important;border:1px solid var(--ui-border)!important;border-radius:8px}
+html body :is(.btn-danger,.btn-cancelar){background:color-mix(in srgb,var(--ui-danger) 12%,var(--ui-bg))!important;color:var(--ui-danger)!important;border:1px solid color-mix(in srgb,var(--ui-danger) 30%,transparent)!important;border-radius:8px}
+html body .btn:hover{filter:brightness(.95);transform:none!important}
+html body table{color:var(--ui-fg)!important;background:var(--ui-card)!important}html body th{background:var(--ui-muted)!important;color:var(--ui-subtle)!important;font-size:12px;font-weight:500}html body :is(th,td){border-color:var(--ui-border)!important}html body tbody tr:hover{background:var(--ui-muted)!important}
+html body :is(.profile-dropdown,.comanda-actions-menu){background:var(--ui-card)!important;border:1px solid var(--ui-border)!important;color:var(--ui-fg)!important}
+.ui-table-scroll{overflow-x:auto;max-width:100%;scrollbar-width:thin}.ui-table-scroll:focus-visible{outline:2px solid var(--ui-ring)}
+.ui-header-actions{display:flex;align-items:center;gap:6px}.ui-header-actions button{min-width:36px;min-height:36px;background:var(--ui-muted)!important;color:var(--ui-fg)!important;border:1px solid var(--ui-border)!important;border-radius:8px}
+@media(max-width:768px){html body :is(.btn,button,input,select){min-height:40px}html body :is(input,select,textarea){font-size:16px}.ui-page-context{padding-left:8px}.ui-topbar{gap:8px}.ui-shell .stats-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}}
+@media print{html body{background:white!important;color:black!important}html body :is(.card,table){color:black!important;background:white!important;box-shadow:none!important}}
