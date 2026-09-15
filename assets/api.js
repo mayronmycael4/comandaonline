@@ -1,6 +1,13 @@
 // API Client para comunicação com backend PHP/MySQL
 const API = {
     baseUrl: (() => {
+        const path = window.location.pathname;
+        const pageMarker = '/pages/';
+        const pageIndex = path.lastIndexOf(pageMarker);
+        if (pageIndex !== -1) {
+            return `${window.location.origin}${path.slice(0, pageIndex + 1)}api/`;
+        }
+
         try {
             return new URL('api/', window.location.origin + window.location.pathname.replace(/[^/]*$/, '/')).href;
         } catch (_e) {
@@ -637,3 +644,38 @@ const API = {
         });
     }
 };
+
+(function patchRelativeApiFetch() {
+    if (typeof window === 'undefined' || typeof window.fetch !== 'function' || window.__comandaApiFetchPatched) {
+        return;
+    }
+
+    window.__comandaApiFetchPatched = true;
+    const nativeFetch = window.fetch.bind(window);
+
+    window.fetch = function patchedFetch(resource, options) {
+        let nextResource = resource;
+        if (typeof resource === 'string') {
+            const trimmed = resource.trim();
+            const isRelativePhp = /^[^:/?#]+\.php(?:[?#].*)?$/.test(trimmed);
+            const isRelativeApiPhp = /^api\/[^?#]+\.php(?:[?#].*)?$/.test(trimmed);
+
+            if (isRelativePhp || isRelativeApiPhp) {
+                const endpoint = isRelativeApiPhp ? trimmed.replace(/^api\//, '') : trimmed;
+                nextResource = API.buildUrl(endpoint);
+            }
+        } else if (resource instanceof Request && typeof resource.url === 'string') {
+            try {
+                const currentDir = new URL('.', window.location.href).href;
+                const url = new URL(resource.url);
+                if (url.href.startsWith(currentDir) && url.pathname.endsWith('.php')) {
+                    nextResource = new Request(API.buildUrl(`${url.pathname.split('/').pop()}${url.search}`), resource);
+                }
+            } catch (_e) {
+                // Mantem a requisicao original se nao for uma URL comum.
+            }
+        }
+
+        return nativeFetch(nextResource, options);
+    };
+})();

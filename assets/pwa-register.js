@@ -21,6 +21,21 @@
         return /android/i.test(window.navigator.userAgent);
     }
 
+    function appBasePath() {
+        const path = window.location.pathname;
+        const pageMarker = '/pages/';
+        const pageIndex = path.lastIndexOf(pageMarker);
+        if (pageIndex !== -1) {
+            return path.slice(0, pageIndex + 1);
+        }
+
+        return path.replace(/[^/]*$/, '');
+    }
+
+    function appUrl(path) {
+        return `${window.location.origin}${appBasePath()}${path}`;
+    }
+
     function shouldShowIosGuide() {
         return isIos() && isSafari() && !isStandalone() && localStorage.getItem(IOS_DISMISS_KEY) !== '1';
     }
@@ -36,7 +51,7 @@
         if (!head.querySelector('link[rel="manifest"]')) {
             const manifest = document.createElement('link');
             manifest.rel = 'manifest';
-            manifest.href = 'api/manifest.php';
+            manifest.href = appUrl('api/manifest.php');
             head.appendChild(manifest);
         }
 
@@ -64,7 +79,7 @@
         if (!head.querySelector('link[rel="apple-touch-icon"]')) {
             const link = document.createElement('link');
             link.rel = 'apple-touch-icon';
-            link.href = 'assets/icon-192.png';
+            link.href = appUrl('assets/icon-192.png');
             head.appendChild(link);
         }
     }
@@ -178,7 +193,7 @@
         window.addEventListener('load', async () => {
             let probe;
             try {
-                probe = await fetch('service-worker.js', { method: 'HEAD', cache: 'no-store' });
+                probe = await fetch(appUrl('service-worker.js'), { method: 'HEAD', cache: 'no-store' });
                 if (!probe.ok) return;
             } catch (_e) {
                 return;
@@ -189,7 +204,7 @@
                 const ct = probe.headers.get('content-type') || '';
                 if (!ct.includes('javascript') && !ct.includes('ecmascript')) return;
 
-            navigator.serviceWorker.register('service-worker.js', { scope: './' })
+            navigator.serviceWorker.register(appUrl('service-worker.js'), { scope: appBasePath() })
                 .then((registration) => {
                     registration.update();
 

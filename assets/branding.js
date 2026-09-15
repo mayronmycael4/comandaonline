@@ -3,10 +3,25 @@ const THEME_KEY = 'espetaria_theme';
 // Cache da empresa (nome/logo/cores) buscada da propria instancia (isolada por tenant).
 let _brandingEmpresaPromise = null;
 
+function brandingApiUrl(endpoint) {
+    if (window.API && typeof window.API.buildUrl === 'function') {
+        return window.API.buildUrl(endpoint);
+    }
+
+    const path = window.location.pathname;
+    const pageMarker = '/pages/';
+    const pageIndex = path.lastIndexOf(pageMarker);
+    if (pageIndex !== -1) {
+        return `${window.location.origin}${path.slice(0, pageIndex + 1)}api/${endpoint}`;
+    }
+
+    return `api/${endpoint}`;
+}
+
 function carregarEmpresaBranding() {
     if (_brandingEmpresaPromise) return _brandingEmpresaPromise;
 
-    _brandingEmpresaPromise = fetch('api/empresa.php')
+    _brandingEmpresaPromise = fetch(brandingApiUrl('empresa.php'))
         .then((r) => (r.ok ? r.json() : null))
         .catch(() => null);
 
