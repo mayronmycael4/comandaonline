@@ -15,5 +15,5 @@
     if (dados.adminUrl) {
         localStorage.setItem('comanda_admin_panel_url', dados.adminUrl);
     }
-    window.location.replace('index.html');
+    window.location.replace('../pages/index.html');
 })();

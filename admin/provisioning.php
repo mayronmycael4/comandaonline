@@ -231,7 +231,7 @@ function tenant_copiar_diretorio(string $origem, string $destino, array $excluir
             continue;
         }
         if (str_starts_with($item, 'tmp_') || (str_starts_with($item, '.') && $item !== '.htaccess') || is_link($origem.DIRECTORY_SEPARATOR.$item)
-            || in_array($item, ['app', 'components', 'lib', 'tests', 'clientes'], true)) {
+            || in_array($item, ['app', 'components', 'lib', 'tests', 'clientes', '_legacy', 'supabase', 'docs', 'visual-qa'], true)) {
             continue;
         }
 
@@ -337,7 +337,19 @@ function tenant_criar_compatibilidade_raiz(string $slug): void
                 continue;
             }
             $destino = $base.DIRECTORY_SEPARATOR.basename($origem);
-            if (!copy($origem, $destino)) {
+            $nome = basename($origem);
+            if ($pasta === 'pages') {
+                $url = 'pages/'.$nome;
+                $conteudo = '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0;url='.$url.'"><a href="'.$url.'">Continuar</a>';
+                $copiado = file_put_contents($destino, $conteudo) !== false;
+            } elseif ($pasta === 'api') {
+                $url = 'api/'.$nome;
+                $conteudo = "<?php\nheader('Location: ". $url ."'.(empty(\$_SERVER['QUERY_STRING']) ? '' : '?'.\$_SERVER['QUERY_STRING']), true, 307);\nexit;\n";
+                $copiado = file_put_contents($destino, $conteudo) !== false;
+            } else {
+                $copiado = copy($origem, $destino);
+            }
+            if (!$copiado) {
                 throw new TenantProvisioningException('Nao foi possivel criar compatibilidade raiz para '.basename($origem).'.');
             }
         }

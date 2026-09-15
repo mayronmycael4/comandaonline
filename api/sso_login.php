@@ -9,7 +9,7 @@ function sso_erro(string $mensagem): void
     http_response_code(403);
     echo '<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;padding:2rem;">'
         .'<h3>'.htmlspecialchars($mensagem, ENT_QUOTES, 'UTF-8').'</h3>'
-        .'<p><a href="login.html">Ir para a tela de login</a></p></body>';
+        .'<p><a href="../pages/login.html">Ir para a tela de login</a></p></body>';
     exit;
 }
 
@@ -75,6 +75,6 @@ $dadosSessao = [
 <body>
 <p style="font-family:sans-serif;padding:2rem;">Entrando no sistema...</p>
 <script type="application/json" id="ssoDados"><?= json_encode($dadosSessao, JSON_UNESCAPED_UNICODE) ?></script>
-<script src="sso_login.js"></script>
+<script src="../assets/sso_login.js?v=20260915paths"></script>
 </body>
 </html>

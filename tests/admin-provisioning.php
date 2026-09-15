@@ -9,6 +9,10 @@ mkdir($root);
 mkdir($root.'/source');
 mkdir($root.'/source/.git');
 mkdir($root.'/source/clientes');
+mkdir($root.'/source/_legacy');
+mkdir($root.'/source/supabase');
+mkdir($root.'/source/includes');
+file_put_contents($root.'/source/includes/db_runtime_config.php', 'master-secret');
 file_put_contents($root.'/source/.env.production', 'private');
 file_put_contents($root.'/source/.htaccess', 'Require all granted');
 file_put_contents($root.'/source/index.html', 'ok');
@@ -19,6 +23,13 @@ try {
     check(!file_exists($root.'/target/.env.production'), 'Arquivo privado copiado');
     check(!file_exists($root.'/target/.git'), 'Git copiado');
     check(!file_exists($root.'/target/clientes'), 'Instancias copiadas recursivamente');
+    check(!file_exists($root.'/target/_legacy'), 'Arquivos aposentados copiados');
+    check(!file_exists($root.'/target/supabase'), 'Configuracao de desenvolvimento copiada');
+    file_put_contents($root.'/target/includes/db_runtime_config.php', 'tenant-secret');
+    file_put_contents($root.'/source/index.html', 'updated');
+    tenant_copiar_diretorio($root.'/source', $root.'/target', TENANTS_EXCLUDE);
+    check(file_get_contents($root.'/target/index.html') === 'updated', 'Instancia nao atualizada');
+    check(file_get_contents($root.'/target/includes/db_runtime_config.php') === 'tenant-secret', 'Configuracao da instancia sobrescrita');
     try {
         tenant_copiar_arquivos_da_aplicacao('../escape');
         throw new RuntimeException('Slug inseguro aceito');

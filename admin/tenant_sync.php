@@ -23,14 +23,27 @@ if (!$empresa || empty($empresa['slug']) || empty($empresa['provisionado_em'])) 
     exit;
 }
 
-tenant_sincronizar_arquivos_da_aplicacao((string) $empresa['slug']);
-tenant_gerar_configuracao_runtime((string) $empresa['slug'], (string) $empresa['db_name'], (string) ($empresa['table_prefix'] ?? ''));
-tenant_criar_compatibilidade_raiz((string) $empresa['slug']);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    csrf_verify();
+    try {
+        tenant_sincronizar_arquivos_da_aplicacao((string) $empresa['slug']);
+        tenant_criar_compatibilidade_raiz((string) $empresa['slug']);
+        flash_set('status', 'Arquivos da instancia atualizados. Banco e configuracao preservados.');
+    } catch (Throwable $e) {
+        error_log('[tenant_sync] empresa '.$id.': '.$e->getMessage());
+        flash_set('error', 'Falha ao atualizar os arquivos da instancia. Consulte o log do servidor.');
+    }
+    redirect('empresas.php');
+}
 
-header('Content-Type: application/json; charset=utf-8');
-echo json_encode([
-    'ok' => true,
-    'empresa_id' => (int) $empresa['id'],
-    'slug' => $empresa['slug'],
-    'synced_at' => date('c'),
-], JSON_UNESCAPED_SLASHES);
+$tituloPagina = 'Atualizar instancia';
+require __DIR__.'/partials/header.php';
+?>
+<h1>Atualizar instancia</h1>
+<p><?= e($empresa['nome']) ?></p>
+<form method="post">
+    <?= csrf_field() ?>
+    <button class="btn" type="submit">Atualizar arquivos</button>
+    <a href="empresas.php">Voltar</a>
+</form>
+<?php require __DIR__.'/partials/footer.php'; ?>
