@@ -57,7 +57,7 @@ require __DIR__.'/partials/header.php';
                     <a href="empresa_form.php?id=<?= (int) $emp['id'] ?>">Editar</a>
                     <?php if ($emp['provisionado_em']): ?>
                         · <a href="empresa_acessar.php?id=<?= (int) $emp['id'] ?>" target="_blank">Acessar</a>
-                        · <a href="#" class="js-compartilhar" data-nome="<?= e($emp['nome']) ?>" data-url="<?= e(rtrim(TENANTS_BASE_URL,'/').'/'.$emp['slug'].'/login.html') ?>" data-login="<?= e($emp['login_admin']) ?>" data-email="<?= e($emp['email'] ?? '') ?>">Compartilhar</a>
+                        · <a href="#" class="js-compartilhar" data-nome="<?= e($emp['nome']) ?>" data-url="<?= e(rtrim(TENANTS_BASE_URL,'/').'/'.$emp['slug'].'/pages/login.html') ?>" data-login="<?= e($emp['login_admin']) ?>" data-email="<?= e($emp['email'] ?? '') ?>">Compartilhar</a>
                     <?php endif; ?>
                 </td>
             </tr>

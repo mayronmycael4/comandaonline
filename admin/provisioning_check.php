@@ -51,7 +51,7 @@ echo json_encode([
     'empresa_id' => (int)$empresa['id'],
     'slug' => $empresa['slug'],
     'base_realpath' => realpath($base) ?: null,
-    'public_login' => rtrim(TENANTS_BASE_URL, '/').'/'.$empresa['slug'].'/login.html',
+    'public_login' => rtrim(TENANTS_BASE_URL, '/').'/'.$empresa['slug'].'/pages/login.html',
     'provisionado_em' => $empresa['provisionado_em'],
     'repaired_runtime' => $repaired,
     'checks' => $checks,

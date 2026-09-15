@@ -53,11 +53,11 @@ require __DIR__.'/partials/header.php';
         <?php if ($empresa['provisionado_em']): ?>
             <p>Status: Provisionada em <?= date('d/m/Y H:i', strtotime($empresa['provisionado_em'])) ?></p>
             <p>Banco de dados: <strong><?= e($empresa['db_name']) ?></strong></p>
-            <p>Link de acesso: <a href="<?= e(TENANTS_BASE_URL.'/'.$empresa['slug'].'/login.html') ?>" target="_blank"><?= e(TENANTS_BASE_URL.'/'.$empresa['slug'].'/login.html') ?></a></p>
+            <p>Link de acesso: <a href="<?= e(TENANTS_BASE_URL.'/'.$empresa['slug'].'/pages/login.html') ?>" target="_blank"><?= e(TENANTS_BASE_URL.'/'.$empresa['slug'].'/pages/login.html') ?></a></p>
             <p>Login do administrador: <strong><?= e($empresa['login_admin']) ?></strong></p>
             <div class="acoes">
                 <a href="empresa_acessar.php?id=<?= (int) $empresa['id'] ?>" class="btn" target="_blank">Acessar Página</a>
-                <a href="#" class="btn btn-secundario js-compartilhar" data-nome="<?= e($empresa['nome']) ?>" data-url="<?= e(rtrim(TENANTS_BASE_URL,'/').'/'.$empresa['slug'].'/login.html') ?>" data-login="<?= e($empresa['login_admin']) ?>" data-senha="<?= e($acessoGerado['senha'] ?? '') ?>" data-email="<?= e($empresa['email'] ?? '') ?>">Compartilhar Acesso</a>
+                <a href="#" class="btn btn-secundario js-compartilhar" data-nome="<?= e($empresa['nome']) ?>" data-url="<?= e(rtrim(TENANTS_BASE_URL,'/').'/'.$empresa['slug'].'/pages/login.html') ?>" data-login="<?= e($empresa['login_admin']) ?>" data-senha="<?= e($acessoGerado['senha'] ?? '') ?>" data-email="<?= e($empresa['email'] ?? '') ?>">Compartilhar Acesso</a>
             </div>
         <?php elseif ($empresa['provisionamento_erro']): ?>
 
@@ -267,7 +267,7 @@ require __DIR__.'/partials/header.php';
 <?php if ($acessoGerado): ?>
     <script type="application/json" id="acessoGeradoData"><?= json_encode([
         'nome' => $empresa['nome'],
-        'url' => rtrim(TENANTS_BASE_URL, '/').'/'.$empresa['slug'].'/login.html',
+        'url' => rtrim(TENANTS_BASE_URL, '/').'/'.$empresa['slug'].'/pages/login.html',
         'login' => $acessoGerado['login'],
         'senha' => $acessoGerado['senha'],
         'email' => $empresa['email'] ?? '',

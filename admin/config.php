@@ -321,7 +321,7 @@ function montar_url_acesso_direto(array $empresa): ?string
     $payloadB64 = rtrim(strtr(base64_encode(json_encode($payload)), '+/', '-_'), '=');
     $assinatura = hash_hmac('sha256', $payloadB64, SSO_SHARED_SECRET);
 
-    return rtrim(TENANTS_BASE_URL, '/').'/'.$empresa['slug'].'/sso_login.php?token='.$payloadB64.'.'.$assinatura;
+    return rtrim(TENANTS_BASE_URL, '/').'/'.$empresa['slug'].'/api/sso_login.php?token='.$payloadB64.'.'.$assinatura;
 }
 
 const MODULOS_DISPONIVEIS = [
