@@ -262,6 +262,20 @@ function tenant_copiar_arquivos_da_aplicacao(string $slug): void
     tenant_copiar_diretorio(TENANTS_LEGACY_SOURCE_PATH, $destino, TENANTS_EXCLUDE);
 }
 
+function tenant_sincronizar_arquivos_da_aplicacao(string $slug): void
+{
+    if (!preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug)) {
+        throw new TenantProvisioningException('Identificador de instancia invalido.');
+    }
+
+    $destino = rtrim(TENANTS_CLIENTS_BASE_PATH, '/\\').DIRECTORY_SEPARATOR.$slug;
+    if (!is_dir($destino)) {
+        throw new TenantProvisioningException('A pasta da instancia nao existe.');
+    }
+
+    tenant_copiar_diretorio(TENANTS_LEGACY_SOURCE_PATH, $destino, TENANTS_EXCLUDE);
+}
+
 function tenant_copiar_logo(string $slug, ?string $logoPath): void
 {
     if (!$logoPath) {
