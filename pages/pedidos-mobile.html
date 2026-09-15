@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Comandas">
+    <meta name="theme-color" content="#c62828">
+    <title>Pedidos - Mobile</title>
+    <link rel="manifest" href="api/manifest.php">
+    <link rel="apple-touch-icon" href="assets/icon-192.png">
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/mobile-first.css?v=20260417-navfit">
+<link rel="stylesheet" href="assets/ui-theme.css?v=20260909r2">
+<link rel="stylesheet" href="assets/ui-shell.css?v=20260911r4">
+<script defer src="assets/ui-shell.js?v=20260911r4"></script>
+</head>
+<body>
+    <header>
+        <div class="brand-block">
+            <div class="brand-logo-wrap" id="brandLogoWrapPedidos"></div>
+            <div class="brand-text-wrap">
+                <div class="brand-title" id="nomeEmpresaHeaderPedidos">Comanda</div>
+                <div class="brand-subtitle">Pedidos</div>
+            </div>
+        </div>
+        <button id="btnLogoutPedidos" type="button" class="btn-logout">Sair</button>
+    </header>
+
+    <div class="container mobile-dashboard-page">
+        <main>
+            <section class="card">
+                <h2>Filtro de Pedidos</h2>
+                <div class="form-group">
+                    <label for="buscaPedidosMobile">Buscar</label>
+                    <input type="text" id="buscaPedidosMobile" placeholder="Mesa, cliente, responsável">
+                </div>
+                <div class="status-chips" id="statusChipsPedidosMobile">
+                    <button type="button" class="status-chip active" data-pedido-status="aberta">Abertas</button>
+                    <button type="button" class="status-chip" data-pedido-status="fechada">Fechadas</button>
+                    <button type="button" class="status-chip" data-pedido-status="todos">Todas</button>
+                </div>
+                <p id="resumoPedidosMobile" class="hint">Carregando pedidos...</p>
+            </section>
+
+            <section class="card">
+                <h2>Lista de Pedidos</h2>
+                <div id="listaPedidosMobile" class="lista-grid">
+                    <p class="empty">Nenhum pedido encontrado.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/branding.js?v=20260417-mobile-logo"></script>
+    <script src="assets/api.js"></script>
+    <script src="assets/toast.js"></script>
+    <script src="assets/storage.js?v=20260914time2"></script>
+    <script src="assets/comanda-module.js?v=20260505-acentos"></script>
+    <script src="assets/menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="assets/mobile-navbar.js?v=20260505-mobile-ajustes"></script>
+    <script src="assets/pwa-register.js?v=20260505-swfix"></script>
+    <script src="assets/pedidos-mobile.js"></script>
+</body>
+</html>
+
+
+
+
+

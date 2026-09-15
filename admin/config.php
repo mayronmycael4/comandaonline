@@ -12,7 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once __DIR__.'/../db_config_helper.php';
+require_once __DIR__.'/../includes/db_config_helper.php';
 
 $comandaAdminEhLocal = comanda_is_local_request();
 $comandaAdminEsquema = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';

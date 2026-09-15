@@ -5,6 +5,9 @@ AddType application/manifest+json .webmanifest
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
+# Block non-public internals and retired artifacts from direct web access.
+RewriteRule ^(?:includes|src|sql|_legacy|backups|logs|visual-qa)(?:/|$) - [R=404,L]
+
 # Force HTTPS in production hosting
 RewriteCond %{HTTPS} !=on
 RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)$ [NC]
@@ -15,8 +18,15 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # real de cliente tem seu proprio db_runtime_config.php (gerado no provisionamento)
 # e por isso NAO cai nesta regra (o -f abaixo e relativo a cada pasta).
 RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)$ [NC]
-RewriteCond db_runtime_config.php !-f
+RewriteCond includes/db_runtime_config.php !-f
 RewriteRule ^(index\.html|login\.html)?$ admin/login.php [L,R=302]
+
+# Public entry points after repository reorganization.
+RewriteRule ^$ pages/index.html [L]
+RewriteRule ^([^/]+\.html)$ pages/$1 [L]
+RewriteRule ^(service-worker\.js|manifest\.json|manifest\.webmanifest|app\.webmanifest|favicon\.ico)$ public/$1 [L]
+RewriteRule ^([^/]+\.(?:css|js|png|jpe?g|gif|webp|ico|ttf|woff2?))$ assets/$1 [L]
+RewriteRule ^([^/]+\.php)$ api/$1 [L]
 </IfModule>
 
 
@@ -46,6 +56,7 @@ Header always set Content-Security-Policy "default-src 'self'; script-src 'self'
 	</IfModule>
 </FilesMatch>
 
+RedirectMatch 404 ^/(?:includes|src|sql|_legacy|backups|logs|visual-qa)(?:/|$)
+
 # Hide legacy duplicate folders if they still exist
-RewriteRule ^api/ - [R=404,L]
 RewriteRule ^js/ - [R=404,L]

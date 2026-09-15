@@ -8,7 +8,7 @@
 declare(strict_types=1);
 
 require_once __DIR__.'/config.php';
-require_once __DIR__.'/../db_tenant_prefix.php';
+require_once __DIR__.'/../includes/db_tenant_prefix.php';
 
 class TenantProvisioningException extends RuntimeException {}
 

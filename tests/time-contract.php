@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../time_contract.php';
+require_once __DIR__ . '/../includes/time_contract.php';
 
 function same($actual, $expected, string $label): void {
     if ($actual !== $expected) throw new RuntimeException($label . ': ' . json_encode($actual));

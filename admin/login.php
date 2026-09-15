@@ -34,9 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="utf-8">
 <title>Login - Painel Comanda Online</title>
 <link rel="stylesheet" href="assets/style.css">
-<link rel="stylesheet" href="../ui-theme.css?v=20260909r2">
-<link rel="stylesheet" href="../ui-login.css?v=20260909r2">
-<script defer src="../ui-login.js?v=20260909r2"></script>
+<link rel="stylesheet" href="../assets/ui-theme.css?v=20260909r2">
+<link rel="stylesheet" href="../assets/ui-login.css?v=20260909r2">
+<script defer src="../assets/ui-login.js?v=20260909r2"></script>
 </head>
 <body>
 <div class="login-page">

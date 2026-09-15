@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comanda Online - PDV</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/ui-theme.css?v=20260909r2">
+    <link rel="stylesheet" href="assets/ui-shell.css?v=20260911r4">
+    <script defer src="assets/ui-shell.js?v=20260911r4"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>PDV</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Caixa</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number" id="pdvTotalHoje">R$ 0,00</div>
+                        <div class="label">Total Hoje</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="pdvAbertas">0</div>
+                        <div class="label">Comandas Abertas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number" id="pdvFechadas">0</div>
+                        <div class="label">Fechadas Hoje</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Comandas Abertas</h2>
+                <div id="pdvComandasAbertas" class="lista-grid">
+                    <p class="empty">Nenhuma comanda aberta.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/branding.js?v=20260828a"></script>
+    <script src="assets/api.js"></script>
+    <script src="assets/toast.js"></script>
+    <script src="assets/storage.js?v=20260914time2"></script>
+    <script src="assets/comanda-module.js?v=20260505-acentos"></script>
+    <script src="assets/menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="assets/menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="assets/pdv.js?v=20260914kds1"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comanda Online - Backup</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <link rel="stylesheet" href="assets/ui-theme.css?v=20260909r2">
+    <link rel="stylesheet" href="assets/ui-shell.css?v=20260911r4">
+    <script defer src="assets/ui-shell.js?v=20260911r4"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Backup e Restauracao</h1>
+            <nav class="desktop-menu"></nav>
+        </header>
+
+        <main>
+            <section class="card">
+                <h2>Backup e Restauracao</h2>
+
+                <div class="download-section">
+                    <h3>Baixar Dados</h3>
+                    <button id="btnDownloadTodos" class="btn btn-primary">Baixar Backup Completo</button>
+                    <p class="hint">Exporta banco completo em JSON.</p>
+                    <p id="resumoBackupGerado" class="hint"></p>
+                </div>
+
+                <div class="download-section">
+                    <h3>Importar Dados</h3>
+                    <input type="file" id="inputImportar" accept=".json" style="display: none;">
+                    <button id="btnImportar" class="btn btn-secondary">Selecionar Backup JSON</button>
+                    <p id="nomeArquivo" class="hint"></p>
+                    <button id="btnConfirmarImportar" class="btn btn-primary" style="display: none; margin-top: 10px;">Confirmar Restauracao</button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="assets/branding.js?v=20260828a"></script>
+    <script src="assets/api.js"></script>
+    <script src="assets/toast.js"></script>
+    <script src="assets/storage.js?v=20260914time2"></script>
+    <script src="assets/menu-geral.js?v=20260505-mobile-ajustes"></script>
+    <script src="assets/menu-admin.js?v=20260417-menu-geral3"></script>
+    <script src="assets/download.js"></script>
+</body>
+</html>
