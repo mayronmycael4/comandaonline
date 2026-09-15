@@ -282,7 +282,9 @@ function tenant_copiar_logo(string $slug, ?string $logoPath): void
 
 function tenant_gerar_configuracao_runtime(string $slug, string $dbName, string $prefix = ''): void
 {
-    $destino = rtrim(TENANTS_CLIENTS_BASE_PATH, '/\\').DIRECTORY_SEPARATOR.$slug.DIRECTORY_SEPARATOR.'db_runtime_config.php';
+    $base = rtrim(TENANTS_CLIENTS_BASE_PATH, '/\\').DIRECTORY_SEPARATOR.$slug;
+    $destino = $base.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'db_runtime_config.php';
+    $destinoLegado = $base.DIRECTORY_SEPARATOR.'db_runtime_config.php';
 
     $conteudo = "<?php\n// Gerado automaticamente pelo painel administrativo em ".date('Y-m-d H:i:s').".\n\n"
         ."return [\n"
@@ -294,7 +296,11 @@ function tenant_gerar_configuracao_runtime(string $slug, string $dbName, string 
         ."    'prefix' => ".var_export($prefix, true).",\n"
         ."];\n";
 
+    if (!is_dir(dirname($destino))) {
+        mkdir(dirname($destino), 0755, true);
+    }
     file_put_contents($destino, $conteudo);
+    file_put_contents($destinoLegado, $conteudo);
 }
 
 /**

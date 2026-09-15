@@ -67,8 +67,14 @@ function comanda_get_db_candidates(): array {
         ];
     }
 
-    $runtimeConfigFile = __DIR__ . '/db_runtime_config.php';
-    if (file_exists($runtimeConfigFile)) {
+    $runtimeConfigFiles = [
+        __DIR__ . '/db_runtime_config.php',
+        dirname(__DIR__) . '/db_runtime_config.php',
+    ];
+    foreach ($runtimeConfigFiles as $runtimeConfigFile) {
+        if (!file_exists($runtimeConfigFile)) {
+            continue;
+        }
         $runtimeConfig = require $runtimeConfigFile;
         if (is_array($runtimeConfig) && isset($runtimeConfig['host'], $runtimeConfig['dbname'], $runtimeConfig['user'])) {
             $candidates[] = [

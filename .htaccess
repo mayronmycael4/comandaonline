@@ -19,6 +19,7 @@ RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # e por isso NAO cai nesta regra (o -f abaixo e relativo a cada pasta).
 RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)$ [NC]
 RewriteCond includes/db_runtime_config.php !-f
+RewriteCond db_runtime_config.php !-f
 RewriteRule ^(index\.html|login\.html)?$ admin/login.php [L,R=302]
 
 # Public entry points after repository reorganization.
