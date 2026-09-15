@@ -180,7 +180,6 @@ async function refreshClientDataIfAppUpdated() {
     localStorage.setItem(APP_BUILD_KEY, APP_BUILD_VERSION);
 
     await Promise.allSettled([
-        clearSiteCookies(),
         clearCacheStorage(),
         refreshServiceWorkers()
     ]);
@@ -240,7 +239,6 @@ async function prepareFreshSessionEnvironment() {
     localStorage.setItem(APP_BUILD_KEY, APP_BUILD_VERSION);
 
     await Promise.allSettled([
-        clearSiteCookies(),
         clearCacheStorage(),
         unregisterServiceWorkers(),
         refreshServiceWorkers()
@@ -284,43 +282,6 @@ async function unregisterServiceWorkers() {
 
     const registrations = await navigator.serviceWorker.getRegistrations();
     await Promise.all(registrations.map((registration) => registration.unregister()));
-}
-
-async function clearSiteCookies() {
-    const cookies = document.cookie ? document.cookie.split(';') : [];
-    if (cookies.length === 0) {
-        return;
-    }
-
-    const hostname = window.location.hostname;
-    const domainParts = hostname.split('.');
-    const domainVariants = [''];
-
-    for (let index = 0; index < domainParts.length; index += 1) {
-        const domain = domainParts.slice(index).join('.');
-        domainVariants.push(domain, `.${domain}`);
-    }
-
-    const pathParts = window.location.pathname.split('/').filter(Boolean);
-    const paths = ['/'];
-    let currentPath = '';
-
-    pathParts.forEach((part) => {
-        currentPath += `/${part}`;
-        paths.push(`${currentPath}/`);
-    });
-
-    cookies.forEach((cookieEntry) => {
-        const separatorIndex = cookieEntry.indexOf('=');
-        const cookieName = separatorIndex === -1 ? cookieEntry.trim() : cookieEntry.slice(0, separatorIndex).trim();
-
-        paths.forEach((path) => {
-            domainVariants.forEach((domain) => {
-                const domainAttribute = domain ? `;domain=${domain}` : '';
-                document.cookie = `${cookieName}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=${path}${domainAttribute}`;
-            });
-        });
-    });
 }
 
 async function getSetupStatus(attempt = 0) {

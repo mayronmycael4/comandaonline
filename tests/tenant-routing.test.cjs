@@ -29,3 +29,17 @@ test('login assets stay inside the tenant and exist in the release', () => {
     assert(fs.existsSync(url.pathname.replace('/clientes/empresa-a/', '')), relative);
   }
 });
+
+test('successful login preserves hosting protection cookies', async () => {
+  const values = new Map();
+  const document = { addEventListener() {}, cookie: '__test=hosting-session' };
+  const context = vm.createContext({
+    document,
+    localStorage: { getItem: (key) => values.get(key) ?? null, setItem: (key, value) => values.set(key, value), clear: () => values.clear() },
+    sessionStorage: { clear() {} },
+    window: {}, navigator: {}, console,
+  });
+  vm.runInContext(fs.readFileSync('assets/login-init.js', 'utf8'), context);
+  await vm.runInContext('prepareFreshSessionEnvironment()', context);
+  assert.equal(document.cookie, '__test=hosting-session');
+});

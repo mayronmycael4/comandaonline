@@ -23,7 +23,7 @@ async function check(zone, timestamp) {
         setTimeout() { complete(); }, clearTimeout() {},
         opts: {listContainer: container, timestampEl, onError(error) { throw error; }}
     };
-    vm.runInNewContext(fs.readFileSync('cozinha-shared.js', 'utf8') + '\nCozinhaModule.startPolling(opts);', context);
+    vm.runInNewContext(fs.readFileSync('assets/cozinha-shared.js', 'utf8') + '\nCozinhaModule.startPolling(opts);', context);
     await done;
     assert.match(container.innerHTML, /10 min/, `${zone}: elapsed time must use the server instant`);
     assert.equal(timestampEl.textContent, 'Atualizado 13:12:18', `${zone}: business timezone and server clock`);

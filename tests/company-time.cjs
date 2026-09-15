@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const context = {Date, Intl};
 vm.createContext(context);
-vm.runInContext(fs.readFileSync('storage.js', 'utf8') + '\nglobalThis.storage = Storage;', context);
+vm.runInContext(fs.readFileSync('assets/storage.js', 'utf8') + '\nglobalThis.storage = Storage;', context);
 for (const zone of ['UTC', 'America/Belem', 'Asia/Tokyo']) {
     process.env.TZ = zone;
     assert.equal(context.storage.companyDate('2026-09-12T02:59:59Z'), '2026-09-11');

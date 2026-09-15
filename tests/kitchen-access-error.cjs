@@ -12,7 +12,7 @@ const context = {
     fetch: async () => ({ok:false,status:403,json:async()=>({message})}),
     setTimeout() { resolve(); }, clearTimeout() {}, Date, console
 };
-vm.runInNewContext(fs.readFileSync('cozinha-shared.js','utf8')+'\nCozinhaModule.startPolling(opts);', {...context, opts:{listContainer:list,contadorEl:counter,timestampEl:timestamp}});
+vm.runInNewContext(fs.readFileSync('assets/cozinha-shared.js','utf8')+'\nCozinhaModule.startPolling(opts);', {...context, opts:{listContainer:list,contadorEl:counter,timestampEl:timestamp}});
 finished.then(() => {
     assert.equal(list.children[0].textContent, message);
     assert.equal(list.children[0].role, 'alert');
