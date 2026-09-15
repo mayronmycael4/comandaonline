@@ -75,6 +75,37 @@ require __DIR__.'/partials/header.php';
             <p style="color:#6b7280;">Esta empresa ainda nao foi provisionada.</p>
         <?php endif; ?>
     </div>
+    <?php if (isset($_GET['diag']) && $_GET['diag'] === '1'): ?>
+        <?php
+        $tenantBase = rtrim(TENANTS_CLIENTS_BASE_PATH, '/\\').DIRECTORY_SEPARATOR.$empresa['slug'];
+        $tenantChecks = [
+            'base_dir' => is_dir($tenantBase),
+            'root_htaccess' => is_file($tenantBase.DIRECTORY_SEPARATOR.'.htaccess'),
+            'root_runtime' => is_file($tenantBase.DIRECTORY_SEPARATOR.'db_runtime_config.php'),
+            'includes_dir' => is_dir($tenantBase.DIRECTORY_SEPARATOR.'includes'),
+            'includes_runtime' => is_file($tenantBase.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'db_runtime_config.php'),
+            'pages_login' => is_file($tenantBase.DIRECTORY_SEPARATOR.'pages'.DIRECTORY_SEPARATOR.'login.html'),
+            'api_sso' => is_file($tenantBase.DIRECTORY_SEPARATOR.'api'.DIRECTORY_SEPARATOR.'sso_login.php'),
+        ];
+        $runtimeRepair = false;
+        if ($empresa['slug'] && $empresa['db_name'] && is_dir($tenantBase) && (!$tenantChecks['root_runtime'] || !$tenantChecks['includes_runtime'])) {
+            tenant_gerar_configuracao_runtime((string)$empresa['slug'], (string)$empresa['db_name'], (string)($empresa['table_prefix'] ?? ''));
+            $runtimeRepair = true;
+            $tenantChecks['root_runtime'] = is_file($tenantBase.DIRECTORY_SEPARATOR.'db_runtime_config.php');
+            $tenantChecks['includes_runtime'] = is_file($tenantBase.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'db_runtime_config.php');
+        }
+        ?>
+        <div class="card">
+            <h3>Diagnostico de provisionamento</h3>
+            <p>Runtime reparado: <strong><?= $runtimeRepair ? 'sim' : 'nao' ?></strong></p>
+            <p>Realpath: <code><?= e(realpath($tenantBase) ?: 'indisponivel') ?></code></p>
+            <ul>
+                <?php foreach ($tenantChecks as $nomeCheck => $okCheck): ?>
+                    <li><?= e($nomeCheck) ?>: <strong><?= $okCheck ? 'ok' : 'falhou' ?></strong></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
 <?php endif; ?>
 
 <div class="card">
