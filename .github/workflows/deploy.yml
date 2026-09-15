@@ -16,13 +16,13 @@ jobs:
       - name: Deploy to InfinityFree
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ftpupload.net
-          username: ${{ secrets.INFINITYFREE_FTP_USERNAME }}
-          password: ${{ secrets.INFINITYFREE_FTP_PASSWORD }}
-          port: 21
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT }}
           protocol: ftp
           local-dir: ./
-          server-dir: /htdocs/
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
           exclude: |
             **/.git*
             **/.git*/**
