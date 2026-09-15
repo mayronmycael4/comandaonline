@@ -86,18 +86,28 @@ require __DIR__.'/partials/header.php';
             'includes_runtime' => is_file($tenantBase.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'db_runtime_config.php'),
             'pages_login' => is_file($tenantBase.DIRECTORY_SEPARATOR.'pages'.DIRECTORY_SEPARATOR.'login.html'),
             'api_sso' => is_file($tenantBase.DIRECTORY_SEPARATOR.'api'.DIRECTORY_SEPARATOR.'sso_login.php'),
+            'root_login' => is_file($tenantBase.DIRECTORY_SEPARATOR.'login.html'),
+            'root_sso' => is_file($tenantBase.DIRECTORY_SEPARATOR.'sso_login.php'),
         ];
         $runtimeRepair = false;
+        $compatRepair = false;
         if ($empresa['slug'] && $empresa['db_name'] && is_dir($tenantBase) && (!$tenantChecks['root_runtime'] || !$tenantChecks['includes_runtime'])) {
             tenant_gerar_configuracao_runtime((string)$empresa['slug'], (string)$empresa['db_name'], (string)($empresa['table_prefix'] ?? ''));
             $runtimeRepair = true;
             $tenantChecks['root_runtime'] = is_file($tenantBase.DIRECTORY_SEPARATOR.'db_runtime_config.php');
             $tenantChecks['includes_runtime'] = is_file($tenantBase.DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'db_runtime_config.php');
         }
+        if ($empresa['slug'] && is_dir($tenantBase) && (!$tenantChecks['root_login'] || !$tenantChecks['root_sso'])) {
+            tenant_criar_compatibilidade_raiz((string)$empresa['slug']);
+            $compatRepair = true;
+            $tenantChecks['root_login'] = is_file($tenantBase.DIRECTORY_SEPARATOR.'login.html');
+            $tenantChecks['root_sso'] = is_file($tenantBase.DIRECTORY_SEPARATOR.'sso_login.php');
+        }
         ?>
         <div class="card">
             <h3>Diagnostico de provisionamento</h3>
             <p>Runtime reparado: <strong><?= $runtimeRepair ? 'sim' : 'nao' ?></strong></p>
+            <p>Compatibilidade raiz reparada: <strong><?= $compatRepair ? 'sim' : 'nao' ?></strong></p>
             <p>Realpath: <code><?= e(realpath($tenantBase) ?: 'indisponivel') ?></code></p>
             <ul>
                 <?php foreach ($tenantChecks as $nomeCheck => $okCheck): ?>

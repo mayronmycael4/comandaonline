@@ -303,6 +303,33 @@ function tenant_gerar_configuracao_runtime(string $slug, string $dbName, string 
     file_put_contents($destinoLegado, $conteudo);
 }
 
+function tenant_criar_compatibilidade_raiz(string $slug): void
+{
+    $base = rtrim(TENANTS_CLIENTS_BASE_PATH, '/\\').DIRECTORY_SEPARATOR.$slug;
+    $grupos = [
+        'pages' => '*.html',
+        'api' => '*.php',
+        'public' => '*',
+    ];
+
+    foreach ($grupos as $pasta => $padrao) {
+        $origemDir = $base.DIRECTORY_SEPARATOR.$pasta;
+        if (!is_dir($origemDir)) {
+            continue;
+        }
+
+        foreach (glob($origemDir.DIRECTORY_SEPARATOR.$padrao) ?: [] as $origem) {
+            if (!is_file($origem)) {
+                continue;
+            }
+            $destino = $base.DIRECTORY_SEPARATOR.basename($origem);
+            if (!copy($origem, $destino)) {
+                throw new TenantProvisioningException('Nao foi possivel criar compatibilidade raiz para '.basename($origem).'.');
+            }
+        }
+    }
+}
+
 /**
  * Provisiona uma instancia completa e nova para $empresaId, usando os dados
  * ja salvos em comanda_saas.empresas + o plano vinculado.
@@ -342,6 +369,7 @@ function tenant_provisionar(int $empresaId, string $adminNome, string $adminLogi
         tenant_copiar_arquivos_da_aplicacao($slug);
         tenant_copiar_logo($slug, $empresa['logo_path']);
         tenant_gerar_configuracao_runtime($slug, $dbName, $prefix);
+        tenant_criar_compatibilidade_raiz($slug);
 
         $upd = $pdo->prepare('UPDATE empresas SET slug=?, db_name=?, table_prefix=?, login_admin=?, provisionado_em=NOW(), provisionamento_erro=NULL WHERE id=?');
         $upd->execute([$slug, $dbName, $prefix, $adminLogin, $empresaId]);
